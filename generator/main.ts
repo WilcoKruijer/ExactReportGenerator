@@ -17,10 +17,10 @@ export function main(site: Site): void {
 }
 
 function registerHelpers(site: Site): void {
-  // console.dir(site, { depth: 99 });
-
-  site.helper("classification", async (dataFile, classification) => {
+  site.helper("classification", async (dataFile, classification, third) => {
     const loader = site.source.data.get(".json");
+
+    console.log("third", third);
 
     if (!loader) {
       throw new Error("Could not get json loader.");
@@ -47,7 +47,7 @@ function registerHelpers(site: Site): void {
       );
     }
 
-    return "" + renderClassification(
+    return renderClassification(
       classification,
       data,
     );

@@ -13,4 +13,4 @@ Dit gaat om de **Vervoerie**, de beste commissie.
 
 Er zijn nog meer commissies :^).
 
-{% classification dataFile, "Onderwijscommissie" %}
+{% classification dataFile, "Onderwijscommissie", { a: 3 } %}

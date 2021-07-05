@@ -1,6 +1,7 @@
 /** @jsx h */
 
 import type {
+  AccountResult,
   AccountTree,
   AccountTreeItem,
   AccountTreeItemAccount,
@@ -9,6 +10,11 @@ import type {
   VNode,
 } from "../deps.ts";
 import { Fragment, h, render } from "../deps.ts";
+
+const formatNumberLocale = "nl-NL" as const;
+const formatNumberOptions = {
+  minimumFractionDigits: 2,
+} as const;
 
 export function renderClassification(
   classificationId: string | number,
@@ -58,36 +64,87 @@ function classificationAccountRows(
     accounts = accounts.filter((a) => a.result);
   }
 
-  const options = {
-    minimumFractionDigits: 2,
+  return (
+    <Fragment>
+      {accounts.map((account) => {
+        const obj = accountResultToLocale(account.result);
+
+        return (
+          <tr>
+            <td>{account.account.GLAccountDescription}</td>
+            <td>{obj.debit}</td>
+            <td>{obj.credit}</td>
+            <td>{obj.total}</td>
+            <td>{/* TODO: Begroot */}</td>
+          </tr>
+        );
+      })}
+      {classificationAccountTotalRow(accounts)}
+    </Fragment>
+  );
+}
+
+function classificationAccountTotalRow(
+  accounts: AccountTreeItemAccount[],
+) {
+  const total = accounts.reduce<
+    Pick<AccountResult, "AmountDebit" | "AmountCredit" | "Amount">
+  >((prev, current) => ({
+    AmountDebit: prev.AmountDebit + (current.result?.AmountDebit || 0),
+    AmountCredit: prev.AmountCredit + (current.result?.AmountCredit || 0),
+    Amount: prev.Amount + (current.result?.Amount || 0),
+  }), {
+    AmountDebit: 0,
+    AmountCredit: 0,
+    Amount: 0,
+  });
+
+  const obj = accountResultToLocale(total);
+
+  return (
+    <tr>
+      <td>Totaal</td>
+      <td>{obj.debit}</td>
+      <td>{obj.credit}</td>
+      <td>{obj.total}</td>
+      <td>{/* TODO: Begroot */}</td>
+    </tr>
+  );
+}
+
+function accountResultToLocale(
+  res:
+    | Pick<AccountResult, "AmountDebit" | "AmountCredit" | "Amount">
+    | undefined,
+) {
+  const obj = {
+    debit: "",
+    credit: "",
+    total: "",
   };
 
-  return accounts.map((account) => {
-    const res = account.result;
-
-    let debit = "", credit = "", total = "";
-    if (res?.AmountDebit) {
-      debit = res.AmountDebit.toLocaleString("nl-NL", options);
-    }
-
-    if (res?.AmountCredit) {
-      credit = res.AmountCredit.toLocaleString("nl-NL", options);
-    }
-
-    if (res?.Amount) {
-      total = (-1 * res.Amount).toLocaleString("nl-NL", options);
-    }
-
-    return (
-      <tr>
-        <td>{account.account.GLAccountDescription}</td>
-        <td>{debit}</td>
-        <td>{credit}</td>
-        <td>{total}</td>
-        <td>{/* TODO: Begroot */}</td>
-      </tr>
+  if (res?.AmountDebit) {
+    obj.debit = res.AmountDebit.toLocaleString(
+      formatNumberLocale,
+      formatNumberOptions,
     );
-  });
+  }
+
+  if (res?.AmountCredit) {
+    obj.credit = res.AmountCredit.toLocaleString(
+      formatNumberLocale,
+      formatNumberOptions,
+    );
+  }
+
+  if (res?.Amount) {
+    obj.total = (-1 * res.Amount).toLocaleString(
+      formatNumberLocale,
+      formatNumberOptions,
+    );
+  }
+
+  return obj;
 }
 
 function getClassificationData(
