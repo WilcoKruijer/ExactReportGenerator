@@ -23,6 +23,11 @@ tfoot {
     display: flex;
 }
 
+.balance-total {
+    margin-top: 0.5em;
+    font-style: italic;
+}
+
 .balance > * {
     flex: 1;
 }
@@ -33,6 +38,7 @@ tfoot {
 
 .balance--line {
     display: flex;
+    font-size: 0.9rem;
 }
 
 .balance--line > .balance--line--description {
@@ -45,4 +51,10 @@ tfoot {
     text-align: right;
     justify-content: flex-end;
     align-items: flex-end;
+}
+
+.balance--line > .balance--line--total {
+    font-weight: 900;
+    font-style: italic;
+    margin-top: 0.2em;
 }

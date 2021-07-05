@@ -25,6 +25,7 @@ body {
 main {
   padding: 3vh 0;
   width: 60%;
+  max-width: 768px;
   margin: 0 auto;
 
   & > :first-child {
