@@ -17,10 +17,8 @@ export function main(site: Site): void {
 }
 
 function registerHelpers(site: Site): void {
-  site.helper("classification", async (dataFile, classification, third) => {
+  site.helper("classification", async (dataFile, classification) => {
     const loader = site.source.data.get(".json");
-
-    console.log("third", third);
 
     if (!loader) {
       throw new Error("Could not get json loader.");

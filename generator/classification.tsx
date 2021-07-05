@@ -11,15 +11,37 @@ import type {
 } from "../deps.ts";
 import { Fragment, h, render } from "../deps.ts";
 
-const formatNumberLocale = "nl-NL" as const;
+const locale = "nl-NL" as const;
 const formatNumberOptions = {
   minimumFractionDigits: 2,
 } as const;
+const defaultOptions: ClassificationOptions = {
+  includeEmpty: true,
+  removePrefix: true,
+} as const;
+
+export interface ClassificationOptions {
+  includeEmpty?: boolean;
+  removePrefix?: boolean;
+}
+
+function getOptions(options?: ClassificationOptions): ClassificationOptions {
+  if (!options) {
+    return defaultOptions;
+  }
+
+  return {
+    ...defaultOptions,
+    ...options,
+  };
+}
 
 export function renderClassification(
   classificationId: string | number,
   tree: AccountTree,
+  options?: ClassificationOptions,
 ) {
+  options = getOptions(options);
   const classification = getClassificationData(classificationId, tree);
 
   if (!classification) {
@@ -41,7 +63,7 @@ export function renderClassification(
           <th>Saldo</th>
           <th>Begroot</th>
         </tr>
-        {classificationAccountRows(classification, true)}
+        {classificationAccountRows(classification, options)}
       </table>
     </Fragment>,
   );
@@ -49,29 +71,36 @@ export function renderClassification(
 
 function classificationAccountRows(
   classification: AccountTreeItemClassification,
-  includeEmpty = false,
+  options: Pick<ClassificationOptions, "includeEmpty" | "removePrefix">,
 ) {
   let accounts: AccountTreeItemAccount[] = classification.children.filter(
     (c): c is AccountTreeItemAccount => c.type === "account",
   ).sort((a, b) =>
     a.account.GLAccountDescription.localeCompare(
       b.account.GLAccountDescription,
-      "nl-NL",
+      locale,
     )
   );
 
-  if (!includeEmpty) {
+  if (!options.includeEmpty) {
     accounts = accounts.filter((a) => a.result);
   }
 
   return (
     <Fragment>
       {accounts.map((account) => {
+        const desc = options.removePrefix
+          ? removeAccountPrefix(
+            classification.classification.Description,
+            account.account.GLAccountDescription,
+          )
+          : account.account.GLAccountDescription;
+
         const obj = accountResultToLocale(account.result);
 
         return (
           <tr>
-            <td>{account.account.GLAccountDescription}</td>
+            <td>{desc}</td>
             <td>{obj.debit}</td>
             <td>{obj.credit}</td>
             <td>{obj.total}</td>
@@ -82,6 +111,31 @@ function classificationAccountRows(
       {classificationAccountTotalRow(accounts)}
     </Fragment>
   );
+}
+
+/**
+ * Removes the prefixed classification name/description from the account
+ * name/description.
+ *
+ * A usual case is where the classification is called 'Vervoerie', and an
+ * account is called 'Vervoerie - Activiteiten'. Not only should the prefix
+ * 'Vervoerie' be removed but also the dash and surrounding spaces.
+ * @param classificationDesc
+ * @param accountDesc
+ * @returns the new filtered account description.
+ */
+function removeAccountPrefix(
+  classificationDesc: string,
+  accountDesc: string,
+): string {
+  const lowerClassificationDesc = classificationDesc.toLowerCase();
+  const newAccountDesc =
+    accountDesc.toLowerCase().startsWith(lowerClassificationDesc)
+      ? accountDesc.substr(classificationDesc.length)
+      : accountDesc;
+
+  // Removes the dash and surrounding spaces
+  return newAccountDesc.replace(/\s*-\s*/, "");
 }
 
 function classificationAccountTotalRow(
@@ -125,21 +179,21 @@ function accountResultToLocale(
 
   if (res?.AmountDebit) {
     obj.debit = res.AmountDebit.toLocaleString(
-      formatNumberLocale,
+      locale,
       formatNumberOptions,
     );
   }
 
   if (res?.AmountCredit) {
     obj.credit = res.AmountCredit.toLocaleString(
-      formatNumberLocale,
+      locale,
       formatNumberOptions,
     );
   }
 
   if (res?.Amount) {
     obj.total = (-1 * res.Amount).toLocaleString(
-      formatNumberLocale,
+      locale,
       formatNumberOptions,
     );
   }
