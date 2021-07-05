@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or site.title }}</title>
+    <meta name="description" content="{{ descrption or site.description }}">
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <main class="{{ bodyClass }}">
+      {{ content | safe }}
+    </main>
+    <footer></footer>
+  </body>
+</html>
