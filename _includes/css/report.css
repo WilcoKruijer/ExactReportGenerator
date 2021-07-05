@@ -1,8 +1,3 @@
-
-body {
-    /* background-color: var(--red); */
-}
-
 table {
     width: 100%;
 }
@@ -22,4 +17,32 @@ tr {
 
 tfoot {
     font-weight: 900;
+}
+
+.balance {
+    display: flex;
+}
+
+.balance > * {
+    flex: 1;
+}
+
+.balance > .left {
+    padding-right: 1em;
+}
+
+.balance--line {
+    display: flex;
+}
+
+.balance--line > .balance--line--description {
+    flex: 2;
+}
+
+.balance--line > .balance--line--amount {
+    display: flex;
+    flex: 1;
+    text-align: right;
+    justify-content: flex-end;
+    align-items: flex-end;
 }

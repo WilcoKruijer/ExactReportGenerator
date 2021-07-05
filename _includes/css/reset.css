@@ -8,6 +8,7 @@
   --purple: #ae2573;
   /* Misc */
   --lightgray: #e6e6e6;
+  --mediumgray: #b1b1b1;
   --darkgray: #0d1117;
   --white: #fff;
 }
@@ -61,4 +62,16 @@ hr {
   border: 0;
   border-top: solid 2px var(--lightgray);
   margin: 5vh 0;
+}
+
+h5 {
+  margin: 1em 0;
+}
+
+@media print { 
+  main {
+    padding: 3vh 0;
+    width: 100% !important;
+    margin: 0 auto;
+  }
 }

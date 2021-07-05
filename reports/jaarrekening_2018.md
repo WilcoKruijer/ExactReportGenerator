@@ -7,6 +7,12 @@ templateEngine: njk,md
 
 # {{ title }}
 
+## Balans
+
+{% balance dataFile, "Assets", "Liabilities" %}
+
+## Winst- en verliesrekeningen
+
 Dit gaat om de **Vervoerie**, de beste commissie.
 
 {% classification dataFile, "Vervoerscommissie" %}
