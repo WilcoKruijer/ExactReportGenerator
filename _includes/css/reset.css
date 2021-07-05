@@ -1,8 +1,14 @@
 :root {
-  --red: #c04;
+  /* From: https://svia.nl/huisstijl */
+  --blue: #304ba3;
+  --red: #da291c;
+  --orange: #f68d2e;
+  --yellow: #f1b434;
+  --green: #1fa824;
+  --purple: #ae2573;
+  /* Misc */
   --lightgray: #e6e6e6;
   --darkgray: #0d1117;
-  --blue: #135;
   --white: #fff;
 }
 
@@ -10,13 +16,15 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: 'Roboto Mono', monospace, -apple-system, system-ui, sans-serif;
   color: var(--darkgray);
   background-color: var(--white);
 }
 
 main {
-  padding: 5vh 5vw;
+  padding: 3vh 0;
+  width: 60%;
+  margin: 0 auto;
 
   & > :first-child {
     margin-top: 0;
@@ -29,16 +37,16 @@ a {
 
 /* Warning */
 .warning {
-  background-color: #ffc;
-  padding: 1em 0.5em;
+  background-color: var(--yellow);
+  padding: 1em 0.75em;
 }
 
 table {
-  margin: 1em 0;
+  margin: 0.75em 0;
 
   & td,
   & th {
-    padding-right: 1em;
+    padding-left: 1em;
   }
 }
 

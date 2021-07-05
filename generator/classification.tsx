@@ -73,13 +73,15 @@ export function renderClassification(
     <p>
       <h3>{classification.classification.Description}</h3>
       <table>
-        <tr>
-          <th>Post</th>
-          <th>Debet</th>
-          <th>Credit</th>
-          <th>Saldo</th>
-          <th>Begroot</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Debet</th>
+            <th>Credit</th>
+            <th>Saldo</th>
+            <th>Begroot</th>
+          </tr>
+        </thead>
         {accountRows}
       </table>
     </p>,
@@ -109,27 +111,31 @@ function classificationAccountRows(
 
   return (
     <Fragment>
-      {accounts.map((account) => {
-        const desc = options.removePrefix
-          ? removeAccountPrefix(
-            classification.classification.Description,
-            account.account.GLAccountDescription,
-          )
-          : account.account.GLAccountDescription;
+      <tbody>
+        {accounts.map((account) => {
+          const desc = options.removePrefix
+            ? removeAccountPrefix(
+              classification.classification.Description,
+              account.account.GLAccountDescription,
+            )
+            : account.account.GLAccountDescription;
 
-        const obj = accountResultToLocale(account.result);
+          const obj = accountResultToLocale(account.result);
 
-        return (
-          <tr>
-            <td>{desc}</td>
-            <td>{obj.debit}</td>
-            <td>{obj.credit}</td>
-            <td>{obj.total}</td>
-            <td>{/* TODO: Begroot */}</td>
-          </tr>
-        );
-      })}
-      {classificationAccountTotalRow(accounts)}
+          return (
+            <tr>
+              <td>{desc}</td>
+              <td>{obj.debit}</td>
+              <td>{obj.credit}</td>
+              <td>{obj.total}</td>
+              <td>{/* TODO: Begroot */}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+      <tfoot>
+        {classificationAccountTotalRow(accounts)}
+      </tfoot>
     </Fragment>
   );
 }
