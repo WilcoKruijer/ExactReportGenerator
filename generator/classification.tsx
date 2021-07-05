@@ -46,14 +46,31 @@ export function renderClassification(
 
   if (!classification) {
     return render(
-      <div class="warning">
-        Could not find classification for '{classificationId}'.
-      </div>,
+      <p>
+        <h3>{classificationId}</h3>
+        <p class="warning">
+          Could not find classification for '{classificationId}'.
+        </p>
+      </p>,
+    );
+  }
+
+  const accountRows = classificationAccountRows(classification, options);
+
+  if (!accountRows) {
+    return render(
+      <p>
+        <h3>{classification.classification.Description}</h3>
+        <div class="warning">
+          Classification '{classificationId}' does not have children of type
+          'account'.
+        </div>
+      </p>,
     );
   }
 
   return render(
-    <Fragment>
+    <p>
       <h3>{classification.classification.Description}</h3>
       <table>
         <tr>
@@ -63,9 +80,9 @@ export function renderClassification(
           <th>Saldo</th>
           <th>Begroot</th>
         </tr>
-        {classificationAccountRows(classification, options)}
+        {accountRows}
       </table>
-    </Fragment>,
+    </p>,
   );
 }
 
@@ -84,6 +101,10 @@ function classificationAccountRows(
 
   if (!options.includeEmpty) {
     accounts = accounts.filter((a) => a.result);
+  }
+
+  if (!accounts.length) {
+    return;
   }
 
   return (
