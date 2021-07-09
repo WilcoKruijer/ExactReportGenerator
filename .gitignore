@@ -4,5 +4,5 @@ _data/**
 !_data/example/
 !_data/example/**
 
-_reports/**
-!_reports/example_report.md
+reports/**
+!reports/example_report.md
