@@ -33,10 +33,14 @@ export function renderBalance(
     return render(renderClassificationIdNotFound(classificationIdLeft));
   }
 
+  const leftTotal = calculateTotalInTreeItems(left.children);
+  const rightTotal = -1 * calculateTotalInTreeItems(right.children);
+  const profit = leftTotal - rightTotal;
+
   return render(
     <Fragment>
-      {renderBalanceTree(left, right)}
-      {renderBalanceTotals(left, right)}
+      {renderBalanceTree(left, right, profit)}
+      {renderBalanceTotals(leftTotal, rightTotal + profit)}
     </Fragment>,
   );
 }
@@ -44,7 +48,15 @@ export function renderBalance(
 function renderBalanceTree(
   left: AccountTreeItemClassification,
   right: AccountTreeItemClassification,
+  profit?: number,
 ) {
+  let profitLossNode: VNode | undefined = undefined;
+
+  if (typeof profit === "number") {
+    const profitLossItem = createProfitLossTreeItem(profit);
+    profitLossNode = renderClassificationTree(profitLossItem);
+  }
+
   return (<div class="two-columns balance">
     <div class="left">
       <h3>Activa</h3>
@@ -53,43 +65,24 @@ function renderBalanceTree(
 
     <div class="right">
       <h3>Passiva</h3>
-      {renderClassificationTree(right)}
+      {renderClassificationTree(right, -1)}
+      {profitLossNode}
     </div>
   </div>);
 }
 
 function renderBalanceTotals(
-  left: AccountTreeItemClassification,
-  right: AccountTreeItemClassification,
+  left: number,
+  right: number,
 ) {
   return (
     <div class="two-columns balance-total">
       <div class="left">
-        <div class="balance--line">
-          <span class="balance--line--description">
-            Totaal activa:
-          </span>
-          <span class="balance--line--amount">
-            {calculateTotalInTreeItems(left.children).toLocaleString(
-              locale,
-              formatNumberOptions,
-            )}
-          </span>
-        </div>
+        {renderBalanceLine("Totaal activa:", left)}
       </div>
 
       <div class="right">
-        <div class="balance--line">
-          <span class="balance--line--description">
-            Totaal passiva:
-          </span>
-          <span class="balance--line--amount">
-            {calculateTotalInTreeItems(right.children).toLocaleString(
-              locale,
-              formatNumberOptions,
-            )}
-          </span>
-        </div>
+        {renderBalanceLine("Totaal passiva:", right)}
       </div>
     </div>
   );
@@ -97,6 +90,7 @@ function renderBalanceTotals(
 
 function renderClassificationTreeAccount(
   item: AccountTreeItem,
+  multiplier = 1,
   classificationDesc?: string,
 ): h.JSX.Element | undefined {
   if (item.type !== "account") {
@@ -114,16 +108,7 @@ function renderClassificationTreeAccount(
     )
     : item.account.GLAccountDescription;
 
-  return (
-    <div class="balance--line">
-      <span class="balance--line--description">
-        {desc}
-      </span>
-      <span class="balance--line--amount">
-        {item.result.Amount.toLocaleString(locale, formatNumberOptions)}
-      </span>
-    </div>
-  );
+  return renderBalanceLine(desc, item.result.Amount * multiplier);
 }
 
 function sortAccountTreeItems(items: AccountTreeItem[]): AccountTreeItem[] {
@@ -158,16 +143,21 @@ function calculateTotalInTreeItems(items: AccountTreeItem[]): number {
 
 function renderClassificationTree(
   item: AccountTreeItem,
+  multiplier = 1,
   classificationDesc?: string,
 ): h.JSX.Element | undefined {
   if (item.type === "account") {
-    return renderClassificationTreeAccount(item, classificationDesc);
+    return renderClassificationTreeAccount(
+      item,
+      multiplier,
+      classificationDesc,
+    );
   }
 
   const children = sortAccountTreeItems(item.children);
 
   const renderedChildren = children.map((c) =>
-    renderClassificationTree(c, item.classification.Description)
+    renderClassificationTree(c, multiplier, item.classification.Description)
   );
 
   if (!renderedChildren.some((c) => c)) {
@@ -175,28 +165,77 @@ function renderClassificationTree(
   }
 
   const showHeader = !children.some((c) => c.type === "classification");
-  let total: VNode | undefined = undefined;
-  if (showHeader) {
-    total = (
-      <div class="balance--line">
-        <span class="balance--line--description balance--line--total">
-          Totaal
-        </span>
-        <span class="balance--line--amount">
-          {calculateTotalInTreeItems(children).toLocaleString(
-            locale,
-            formatNumberOptions,
-          )}
-        </span>
-      </div>
-    );
-  }
+  const total = showHeader
+    ? renderBalanceLine(
+      "Totaal",
+      calculateTotalInTreeItems(children) * multiplier,
+      [
+        "balance--line--total",
+      ],
+    )
+    : undefined;
 
   return (
     <Fragment>
-      {showHeader ? <h5>{item.classification.Description}</h5> : ""}
+      {showHeader
+        ? <h4 class="balance--header">{item.classification.Description}</h4>
+        : ""}
       {renderedChildren}
       {total}
     </Fragment>
   );
+}
+
+function renderBalanceLine(
+  description: string,
+  amount: number,
+  extraDescriptionClasses: string[] = [],
+) {
+  const descriptionClasses = [
+    "balance--line--description",
+    ...extraDescriptionClasses,
+  ];
+  return (
+    <div class="balance--line">
+      <span class={descriptionClasses.join(" ")}>
+        {description}
+      </span>
+      <span class="balance--line--amount">
+        {amount.toLocaleString(
+          locale,
+          formatNumberOptions,
+        )}
+      </span>
+    </div>
+  );
+}
+
+function createProfitLossTreeItem(
+  profit: number,
+): AccountTreeItemClassification {
+  const description = profit >= 0 ? "Winst" : "Verlies";
+  return {
+    type: "classification",
+    classification: {
+      ID: "",
+      Code: "",
+      Description: "Te alloceren",
+      PeriodType: "instant",
+    },
+    children: [{
+      type: "account",
+      account: {
+        GLAccount: "",
+        GLAccountCode: "",
+        GLAccountDescription: description,
+      },
+      result: {
+        Amount: profit,
+        AmountCredit: profit >= 0 ? profit : 0,
+        AmountDebit: profit < 0 ? profit : 0,
+        BalanceType: "B",
+        Count: 1,
+      },
+    }],
+  };
 }

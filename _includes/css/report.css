@@ -28,7 +28,7 @@ tfoot {
 }
 
 .balance-total {
-    margin-top: 0.5em;
+    margin-top: 0.75em;
     font-style: italic;
     page-break-after: always;
 }
@@ -65,4 +65,8 @@ tfoot {
     font-weight: 900;
     font-style: italic;
     margin-top: 0.2em;
+}
+
+.balance--header {
+    margin: 1.25em 0 0.25em 0;
 }
