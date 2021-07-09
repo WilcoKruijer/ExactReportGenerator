@@ -6,8 +6,12 @@ import type {
   AccountTreeItem,
   AccountTreeItemAccount,
   AccountTreeItemClassification,
+  BudgetScenarioValue,
   SimplifiedClassification,
 } from "../deps.ts";
+
+import type { YearlyBudgetScenarioValue } from "./types.d.ts";
+
 import { Fragment, h, render } from "../deps.ts";
 import {
   getClassificationData,
@@ -15,6 +19,7 @@ import {
   renderClassificationIdNotFound,
 } from "./classification.tsx";
 import { formatNumberOptions, locale } from "./constants.ts";
+import { getBudgetForAccount } from "./budget.ts";
 
 const defaultOptions: ProfitLossOptions = {
   includeEmpty: true,
@@ -40,6 +45,7 @@ function getOptions(options?: ProfitLossOptions): ProfitLossOptions {
 export function renderProfitLoss(
   classificationId: string | number,
   tree: AccountTree,
+  budget?: YearlyBudgetScenarioValue[],
   options?: ProfitLossOptions,
 ) {
   options = getOptions(options);
@@ -49,7 +55,11 @@ export function renderProfitLoss(
     return render(renderClassificationIdNotFound(classificationId));
   }
 
-  const accountRows = renderClassificationAccountRows(classification, options);
+  const accountRows = renderClassificationAccountRows(
+    classification,
+    budget,
+    options,
+  );
 
   if (!accountRows) {
     return render(
@@ -84,6 +94,7 @@ export function renderProfitLoss(
 
 function renderClassificationAccountRows(
   classification: AccountTreeItemClassification,
+  budget: YearlyBudgetScenarioValue[] | undefined,
   options: Pick<ProfitLossOptions, "includeEmpty" | "removePrefix">,
 ) {
   let accounts: AccountTreeItemAccount[] = classification.children.filter(
@@ -116,19 +127,30 @@ function renderClassificationAccountRows(
 
           const obj = accountResultToLocale(account.result);
 
+          let budgetString = "";
+          if (Array.isArray(budget)) {
+            budgetString = getBudgetForAccount(
+              account.account.GLAccount,
+              budget,
+            )?.toLocaleString(
+              locale,
+              formatNumberOptions,
+            ) ?? "";
+          }
+
           return (
             <tr>
               <td>{desc}</td>
               <td>{obj.debit}</td>
               <td>{obj.credit}</td>
               <td>{obj.total}</td>
-              <td>{/* TODO: Begroot */}</td>
+              <td>{budgetString}</td>
             </tr>
           );
         })}
       </tbody>
       <tfoot>
-        {renderClassificationAccountTotalRow(accounts)}
+        {renderClassificationAccountTotalRow(accounts, budget)}
       </tfoot>
     </Fragment>
   );
@@ -136,6 +158,7 @@ function renderClassificationAccountRows(
 
 function renderClassificationAccountTotalRow(
   accounts: AccountTreeItemAccount[],
+  budget: YearlyBudgetScenarioValue[] | undefined,
 ) {
   const total = accounts.reduce<
     Pick<AccountResult, "AmountDebit" | "AmountCredit" | "Amount">
@@ -151,13 +174,38 @@ function renderClassificationAccountTotalRow(
 
   const obj = accountResultToLocale(total);
 
+  let budgetString = "";
+  if (Array.isArray(budget)) {
+    const totalBudget = accounts.reduce<number | undefined>((prev, account) => {
+      const budgetAmount = getBudgetForAccount(
+        account.account.GLAccount,
+        budget,
+      );
+
+      if (typeof prev === "undefined") {
+        return budgetAmount;
+      }
+
+      if (typeof budgetAmount === "undefined") {
+        return prev;
+      }
+
+      return prev + budgetAmount;
+    }, undefined);
+
+    budgetString = totalBudget?.toLocaleString(
+      locale,
+      formatNumberOptions,
+    ) ?? "";
+  }
+
   return (
     <tr>
       <td>Totaal</td>
       <td>{obj.debit}</td>
       <td>{obj.credit}</td>
       <td>{obj.total}</td>
-      <td>{/* TODO: Begroot */}</td>
+      <td>{budgetString}</td>
     </tr>
   );
 }

@@ -38,7 +38,6 @@ tfoot {
 
 .balance--line {
     display: flex;
-    font-size: 0.9rem;
 }
 
 .balance--line > .balance--line--description {

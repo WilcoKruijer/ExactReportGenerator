@@ -1,24 +1,38 @@
 ---
 title: Jaarrekening 2018
 layout: layouts/base.njk
-dataFile: 2018_full
+options: { report: "2018/report.json", budget: "2018/budget.json" }
 templateEngine: njk,md
 ---
 
 # {{ title }}
 
+## Introductie 🎉
+
+Dit financiële jaarverslag hoort bij het eindejaarsverslag van bestuur 18 der
+**via**. Hierin geef ik een overzicht van de inkomsten en uitgaven in het
+afgelopen jaar. Deze financiële periode heeft gelopen vanaf 8 februari 2018 tot
+en met 31 december 2018.
+
 ## Balans
 
-{% balance dataFile, "Assets", "Liabilities" %}
+De balans geeft een overzicht van de bezittingen, schulden en eigen vermogen van
+de vereniging. De linkerkant (activa) geeft aan wat voor bezittingen wij hebben,
+de rechterkant (passiva) geeft aan hoe we deze bezittingen hebben gefinancierd.
+Onder de balans staat een uitleg van de verschillende posten.
+
+{% balance "Assets", "Liabilities", options %}
 
 ## Winst- en verliesrekeningen
 
-Dit gaat om de **Vervoerie**, de beste commissie.
+Dit gaat om de **Vervoerie**, :^).
 
-{% classification dataFile, "Vervoerscommissie" %}
+{% classification "Vervoerscommissie", options %}
 
-Er zijn nog meer commissies :^).
+Er zijn nog meer commissies.
 
-{% classification dataFile, "Onderwijscommissie", { a: 3 } %}
+{% classification "Onderwijscommissie", options %}
 
-{% classification dataFile, "Liabilities", { a: 3 } %}
+{% classification "Liabilities", options %}
+
+{% classification "Financieel opbrengsten en kosten", options %}

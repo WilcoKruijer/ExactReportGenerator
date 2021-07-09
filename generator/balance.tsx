@@ -103,7 +103,7 @@ function renderClassificationTreeAccount(
     return;
   }
 
-  if (!item.result) {
+  if (!item.result || !item.result.Amount) {
     return;
   }
 

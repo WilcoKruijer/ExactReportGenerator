@@ -12,5 +12,8 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/_site": true
+  },
+  "deno.suggest.imports.hosts": {
+    "https://raw.githubusercontent.com": false
   }
 }
