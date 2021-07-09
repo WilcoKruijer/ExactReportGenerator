@@ -74,7 +74,7 @@ export function renderProfitLoss(
   }
 
   return render(
-    <p>
+    <section>
       <h3>{classification.classification.Description}</h3>
       <table>
         <thead>
@@ -88,7 +88,7 @@ export function renderProfitLoss(
         </thead>
         {accountRows}
       </table>
-    </p>,
+    </section>,
   );
 }
 

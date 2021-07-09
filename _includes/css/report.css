@@ -2,6 +2,10 @@ table {
     width: 100%;
 }
 
+section {
+    page-break-inside: avoid;
+}
+
 tr {
     text-align: right;
     
@@ -19,16 +23,21 @@ tfoot {
     font-weight: 900;
 }
 
-.balance {
+.two-columns {
     display: flex;
 }
 
 .balance-total {
     margin-top: 0.5em;
     font-style: italic;
+    page-break-after: always;
 }
 
-.balance > * {
+.balance-total > .left {
+    padding-right: 1em;
+}
+
+.two-columns > * {
     flex: 1;
 }
 

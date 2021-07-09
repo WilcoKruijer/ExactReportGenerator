@@ -45,7 +45,7 @@ function renderBalanceTree(
   left: AccountTreeItemClassification,
   right: AccountTreeItemClassification,
 ) {
-  return (<div class="balance">
+  return (<div class="two-columns balance">
     <div class="left">
       <h3>Activa</h3>
       {renderClassificationTree(left)}
@@ -63,7 +63,7 @@ function renderBalanceTotals(
   right: AccountTreeItemClassification,
 ) {
   return (
-    <div class="balance balance-total">
+    <div class="two-columns balance-total">
       <div class="left">
         <div class="balance--line">
           <span class="balance--line--description">
