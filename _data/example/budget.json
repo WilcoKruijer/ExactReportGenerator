@@ -1,0 +1,42 @@
+[
+  {
+    "AmountDC": -1999.9999999999999,
+    "BudgetScenario": "2df89ebe-b2f2-4aea-b44e-8bcad58f1af7",
+    "BudgetScenarioCode": "B2000",
+    "BudgetScenarioDescription": "Budget 2000",
+    "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0bb",
+    "GLAccountCode": "8000",
+    "GLAccountDescription": "Sponsoring",
+    "ReportingYear": 2020
+  },
+  {
+    "AmountDC": -80,
+    "BudgetScenario": "2df89ebe-b2f2-4aea-b44e-8bcad58f1af7",
+    "BudgetScenarioCode": "B2000",
+    "BudgetScenarioDescription": "Budget 2000",
+    "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0bc",
+    "GLAccountCode": "",
+    "GLAccountDescription": "",
+    "ReportingYear": 2020
+  },
+  {
+    "AmountDC": 130,
+    "BudgetScenario": "e009de73-6569-493b-ab59-f835c9fca500",
+    "BudgetScenarioCode": "B2000",
+    "BudgetScenarioDescription": "Budget 2000",
+    "GLAccount": "e009de73-6569-493b-ab59-f835c9fca500",
+    "GLAccountCode": "",
+    "GLAccountDescription": "",
+    "ReportingYear": 2020
+  },
+  {
+    "AmountDC": 50,
+    "BudgetScenario": "882b070f-8f94-4b44-b002-e41c690fd0b5",
+    "BudgetScenarioCode": "B2000",
+    "BudgetScenarioDescription": "Budget 2000",
+    "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0b5",
+    "GLAccountCode": "",
+    "GLAccountDescription": "",
+    "ReportingYear": 2020
+  }
+]

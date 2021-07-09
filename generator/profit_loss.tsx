@@ -129,10 +129,16 @@ function renderClassificationAccountRows(
 
           let budgetString = "";
           if (Array.isArray(budget)) {
-            budgetString = getBudgetForAccount(
+            let budgetAmount = getBudgetForAccount(
               account.account.GLAccount,
               budget,
-            )?.toLocaleString(
+            );
+
+            if (budgetAmount) {
+              budgetAmount *= -1;
+            }
+
+            budgetString = budgetAmount?.toLocaleString(
               locale,
               formatNumberOptions,
             ) ?? "";
@@ -176,7 +182,7 @@ function renderClassificationAccountTotalRow(
 
   let budgetString = "";
   if (Array.isArray(budget)) {
-    const totalBudget = accounts.reduce<number | undefined>((prev, account) => {
+    let totalBudget = accounts.reduce<number | undefined>((prev, account) => {
       const budgetAmount = getBudgetForAccount(
         account.account.GLAccount,
         budget,
@@ -192,6 +198,10 @@ function renderClassificationAccountTotalRow(
 
       return prev + budgetAmount;
     }, undefined);
+
+    if (totalBudget) {
+      totalBudget *= -1;
+    }
 
     budgetString = totalBudget?.toLocaleString(
       locale,

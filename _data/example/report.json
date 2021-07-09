@@ -1,0 +1,387 @@
+[
+  {
+    "type": "classification",
+    "classification": {
+      "ID": "0d1f8dbb-8eab-4172-b508-25722bc9c513",
+      "Code": "02",
+      "Description": "Profit And loss statement",
+      "PeriodType": "duration"
+    },
+    "children": [
+      {
+        "type": "classification",
+        "classification": {
+          "ID": "cd31924e-10f0-48cf-a0c2-b3b366fd966a",
+          "Code": "4",
+          "Description": "Costs",
+          "PeriodType": "duration"
+        },
+        "children": [
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "0c51f050-7f76-4485-b049-f9fee93f211a",
+              "Code": "4100",
+              "Description": "Income",
+              "PeriodType": "duration"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0bb",
+                  "GLAccountCode": "8000",
+                  "GLAccountDescription": "Sponsoring"
+                },
+                "result": {
+                  "Amount": -2500,
+                  "AmountCredit": 2500,
+                  "AmountDebit": 0,
+                  "BalanceType": "W",
+                  "Count": 10
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0bc",
+                  "GLAccountCode": "8000",
+                  "GLAccountDescription": "Subsidies"
+                },
+                "result": {
+                  "Amount": -575,
+                  "AmountCredit": 575,
+                  "AmountDebit": 0,
+                  "BalanceType": "W",
+                  "Count": 10
+                }
+              }
+            ]
+          },
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "0c51f050-7f76-4485-b049-f9fee93f2113",
+              "Code": "4100",
+              "Description": "General Costs",
+              "PeriodType": "duration"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "882b070f-8f94-4b44-b002-e41c690fd0b5",
+                  "GLAccountCode": "4100",
+                  "GLAccountDescription": "Business Gifts"
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "6a19055c-5275-4664-ba15-0e5968e10654",
+                  "GLAccountCode": "4103",
+                  "GLAccountDescription": "Exact Online Subscription"
+                },
+                "result": {
+                  "Amount": 105,
+                  "AmountCredit": 0,
+                  "AmountDebit": 105,
+                  "BalanceType": "W",
+                  "Count": 2
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "e009de73-6569-493b-ab59-f835c9fca500",
+                  "GLAccountCode": "5560",
+                  "GLAccountDescription": "Banking Costs"
+                },
+                "result": {
+                  "Amount": 130,
+                  "AmountCredit": 0,
+                  "AmountDebit": 130,
+                  "BalanceType": "W",
+                  "Count": 17
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "a6d28fb4-496b-46e3-b535-6e342934ac2d",
+                  "GLAccountCode": "4105",
+                  "GLAccountDescription": "Website hosting"
+                },
+                "result": {
+                  "Amount": 30,
+                  "AmountCredit": 0,
+                  "AmountDebit": 30,
+                  "BalanceType": "W",
+                  "Count": 2
+                }
+              }
+            ]
+          },
+
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "b06dd581-cc0a-4328-9b69-95d386e2c574",
+              "Code": "43",
+              "Description": "Other operating charges",
+              "PeriodType": "duration"
+            },
+            "children": [
+              {
+                "type": "classification",
+                "classification": {
+                  "ID": "c05c2761-8d72-45aa-923c-790705ff53d1",
+                  "Code": "44",
+                  "Description": "Miscellaneous Costs",
+                  "PeriodType": "duration"
+                },
+                "children": [
+                  {
+                    "type": "account",
+                    "account": {
+                      "GLAccount": "b666c405-d737-4f43-85e2-50d9b60a1781",
+                      "GLAccountCode": "9410",
+                      "GLAccountDescription": "Lorem"
+                    }
+                  },
+                  {
+                    "type": "account",
+                    "account": {
+                      "GLAccount": "47f80439-c021-4295-a640-2479a04dc637",
+                      "GLAccountCode": "9150",
+                      "GLAccountDescription": "Ipsum"
+                    }
+                  },
+                  {
+                    "type": "account",
+                    "account": {
+                      "GLAccount": "e26ccbd4-12c6-4a41-9b18-b7958c52c939",
+                      "GLAccountCode": "9130",
+                      "GLAccountDescription": "Dolor"
+                    }
+                  },
+                  {
+                    "type": "account",
+                    "account": {
+                      "GLAccount": "412e0166-c88d-448e-ab78-fcb35a2566b5",
+                      "GLAccountCode": "9140",
+                      "GLAccountDescription": "Sit Amet"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "classification",
+    "classification": {
+      "ID": "82b58726-d7f6-4fbe-850d-dab65955878d",
+      "Code": "01",
+      "Description": "Balance Sheet",
+      "PeriodType": "instant"
+    },
+    "children": [
+      {
+        "type": "classification",
+        "classification": {
+          "ID": "90dcddfe-5206-4e71-8961-877dcb0cd224",
+          "Code": "1",
+          "Description": "Assets",
+          "PeriodType": "instant"
+        },
+        "children": [
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "a88816d5-add1-4f9c-91d7-2bfefc0183d8",
+              "Code": "13",
+              "Description": "Stocks",
+              "PeriodType": "instant"
+            },
+            "children": []
+          },
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "683742d6-3d53-434e-b93b-30f118fffbbf",
+              "Code": "16",
+              "Description": "Cash at bank and in hand",
+              "PeriodType": "instant"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "b85ca87d-0ee9-42ad-a936-aa01db325544",
+                  "GLAccountCode": "1100",
+                  "GLAccountDescription": "Deutsche Bank"
+                },
+                "result": {
+                  "Amount": 10000.00,
+                  "AmountCredit": 2919.04,
+                  "AmountDebit": 7590.5,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "c49dd855-7b42-4abd-8f40-2462a796d863",
+                  "GLAccountCode": "1000",
+                  "GLAccountDescription": "Cash"
+                },
+                "result": {
+                  "Amount": 350.00,
+                  "AmountCredit": 350.00,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              }
+            ]
+          },
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "b1f460c0-f4fe-49ae-a4fa-39469119f547",
+              "Code": "17",
+              "Description": "Stockpile",
+              "PeriodType": "instant"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "5cb1be0a-619e-43aa-b779-0ee4e23c63b6",
+                  "GLAccountCode": "2001",
+                  "GLAccountDescription": "Goodie bags"
+                },
+                "result": {
+                  "Amount": -150,
+                  "AmountCredit": 150,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              }
+            ]
+          },
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "72664d8a-863b-4da8-a35d-52f812d3d0e8",
+              "Code": "14",
+              "Description": "Short term debt",
+              "PeriodType": "instant"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "139f8a39-3403-41da-b390-574873b037aa",
+                  "GLAccountCode": "1300",
+                  "GLAccountDescription": "Debiteuren"
+                },
+                "result": {
+                  "Amount": 1300,
+                  "AmountCredit": 0,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "classification",
+        "classification": {
+          "ID": "345ff7ee-1985-47ea-8c7b-c76df736a2ff",
+          "Code": "2",
+          "Description": "Liabilities",
+          "PeriodType": "instant"
+        },
+        "children": [
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "eabacdb7-46c9-4dd4-b9f2-e6e6beeeaa5f",
+              "Code": "22",
+              "Description": "Debts",
+              "PeriodType": "instant"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "857d726d-f317-45a0-a09c-e02ba3829363",
+                  "GLAccountCode": "2000",
+                  "GLAccountDescription": "Kruisposten"
+                },
+                "result": {
+                  "Amount": -750,
+                  "AmountCredit": 750,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              },
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "09306cf0-0ce0-45a2-9978-ed4229441628",
+                  "GLAccountCode": "1600",
+                  "GLAccountDescription": "Crediteuren"
+                },
+                "result": {
+                  "Amount": -840.00,
+                  "AmountCredit": 0,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              }
+            ]
+          },
+          {
+            "type": "classification",
+            "classification": {
+              "ID": "9b1ca604-6819-441e-b44f-52bc37d39a7a",
+              "Code": "20",
+              "Description": "Capital and reserves",
+              "PeriodType": "instant"
+            },
+            "children": [
+              {
+                "type": "account",
+                "account": {
+                  "GLAccount": "7f5db397-616c-47c7-a22c-4c8538e5b89b",
+                  "GLAccountCode": "0700",
+                  "GLAccountDescription": "Equity"
+                },
+                "result": {
+                  "Amount": -7100.00,
+                  "AmountCredit": 0,
+                  "AmountDebit": 0,
+                  "BalanceType": "B",
+                  "Count": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
