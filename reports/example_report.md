@@ -1,7 +1,9 @@
 ---
 title: Example Report
 layout: layouts/base.njk
-options: { report: "example/report.json", budget: "example/budget.json" }
+options:
+    report: example/report.json
+    budget: example/budget.json
 templateEngine: njk,md
 ---
 

@@ -1,11 +1,33 @@
 ---
 layout: layouts/home.njk
-menu:
-  visible: true
-  title: Home
-  order: 0
+title: Homepage
 ---
 
-<h1>
-  Hello
-</h1>
+<section style="display: flex; flex-direction: column; height: 90vh;">
+  <div style="flex: 1 0 auto;">
+    <h1>
+      Exact Report Generator Homepage
+    </h1>
+
+    <p>
+    The following reports are available:
+    </p>
+
+    <ul>
+      {% for post in search.pages() %}
+      <li>
+        <a href="{{ post.data.url }}">
+          {{ post.data.title }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div style="flex-shrink: 0">
+    <p>(c) Wilco Kruijer<p>
+    <p>
+      The source code of this generator is available on <a href="https://github.com/WilcoKruijer/ExactReportGenerator">Github</a>.
+    <p>
+  </div>
+</section>
