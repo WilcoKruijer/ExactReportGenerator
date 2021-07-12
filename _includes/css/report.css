@@ -1,12 +1,14 @@
-table {
-    width: 100%;
-}
+.classification-table {
+  width: 100%;
 
-section {
-    page-break-inside: avoid;
-}
+  margin: 0.75em 0;
 
-tr {
+  & td:not(:first-child),
+  & th:not(:first-child) {
+    padding: 0 0 0 1em;
+  }
+
+  & tr {
     text-align: right;
     
     & > :not(:first-child) {
@@ -17,10 +19,32 @@ tr {
         text-align: left;
         width: 50%;
     }
+  }
+
+  & tfoot {
+      font-weight: 900;
+  }
 }
 
-tfoot {
-    font-weight: 900;
+@media only screen and (max-width: 768px) {
+  table {
+    padding-right: 0.5em;
+  }
+
+  .two-columns {
+    padding-right: 0.5em;
+  }
+}
+
+.table-wrapper {
+  overflow: hidden;
+  overflow-x: auto;
+  clear: both;
+  width: 100%;
+}
+
+section {
+    page-break-inside: avoid;
 }
 
 .two-columns {
@@ -89,6 +113,12 @@ tfoot {
         list-style-type: none;
     }
 }
+
+.warning {
+  background-color: var(--yellow);
+  padding: 1em 0.75em;
+}
+
 
 @media print { 
   /* We cannot add page numbering to the ToC, so it is not useful when printed.*/

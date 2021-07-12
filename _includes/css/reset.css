@@ -22,34 +22,39 @@ body {
   background-color: var(--white);
 }
 
-main {
-  padding: 3vh 0;
-  width: 60%;
-  max-width: 768px;
-  margin: 0 auto;
+@media only screen and (max-width: 768px) {
+  main {
+    padding: 0;
+    margin: 0 0.5em;
+    width: 100%;
+  }
+}
 
-  & > :first-child {
-    margin-top: 0;
+@media only screen and (min-width: 768px) {
+  main {
+    padding: 3vh 0;
+    width: 60%;
+    max-width: 768px;
+    margin: 0 auto;
+  }
+}
+
+table {
+  width: 100%;
+
+  & td, th {
+    vertical-align: baseline;
+    text-align: left;
+  }
+
+  & td:not(:first-child), 
+  & th:not(:first-child) {
+    padding: 0.5em;
   }
 }
 
 a {
   color: var(--blue);
-}
-
-/* Warning */
-.warning {
-  background-color: var(--yellow);
-  padding: 1em 0.75em;
-}
-
-table {
-  margin: 0.75em 0;
-
-  & td,
-  & th {
-    padding-left: 1em;
-  }
 }
 
 pre,

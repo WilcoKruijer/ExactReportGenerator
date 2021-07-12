@@ -75,18 +75,20 @@ export function renderProfitLoss(
   return render(
     <Fragment>
       ### {classification.classification.Description + "\n"}
-      <table>
-        <thead>
-          <tr>
-            <th>Post</th>
-            <th>Debet</th>
-            <th>Credit</th>
-            <th>Saldo</th>
-            <th>Begroot</th>
-          </tr>
-        </thead>
-        {accountRows}
-      </table>
+      <div class="table-wrapper">
+        <table class="classification-table">
+          <thead>
+            <tr>
+              <th>Post</th>
+              <th>Debet</th>
+              <th>Credit</th>
+              <th>Saldo</th>
+              <th>Begroot</th>
+            </tr>
+          </thead>
+          {accountRows}
+        </table>
+      </div>
     </Fragment>,
   );
 }
