@@ -41,6 +41,8 @@ Nullam aliquet tincidunt elit quis tempor.
 
 {% classification "Income", options %}
 
+{% transactions "example/transactions_gl1.json", "day" %}
+
 {% classification "Miscellaneous Costs", options %}
 
 This is the **END**.

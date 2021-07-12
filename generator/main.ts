@@ -1,8 +1,10 @@
-import { AccountTree, extname } from "../deps.ts";
+import { AccountTree, extname, TransactionLine } from "../deps.ts";
 import { Site } from "../deps.ts";
 import { renderBalance } from "./balance.tsx";
 import { renderProfitLoss } from "./profit_loss.tsx";
+import { renderAggregatedTransactionGraph } from "./graphing.tsx";
 import { YearlyBudgetScenarioValue } from "./types.d.ts";
+import { isDateAggregator } from "./transactions.ts";
 
 /** This function is ran when the config is loaded. Can be used to register
  * custom filters, helpers, etc.
@@ -14,7 +16,7 @@ export function main(site: Site): void {
   site.addEventListener("beforeBuild", () => {
   });
 
-  site.addEventListener("beforeUpdate", (_event) => {
+  site.addEventListener("beforeUpdate", () => {
   });
 }
 
@@ -64,6 +66,30 @@ function registerHelpers(site: Site): void {
         classificationLeft,
         classificationRight,
         report,
+      );
+    },
+    { type: "tag", async: true },
+  );
+
+  site.helper(
+    "transactions",
+    async (transactionFile, dateAggregator = "day") => {
+      if (typeof transactionFile !== "string") {
+        throw new TypeError("Invalid transaction file given.");
+      }
+
+      if (!isDateAggregator(dateAggregator)) {
+        throw new TypeError("Invalid dateAggregator given.");
+      }
+
+      const transactions = await getDataFile<TransactionLine[]>(
+        site,
+        transactionFile,
+      );
+
+      return await renderAggregatedTransactionGraph(
+        transactions,
+        dateAggregator,
       );
     },
     { type: "tag", async: true },
