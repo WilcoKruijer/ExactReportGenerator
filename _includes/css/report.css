@@ -26,6 +26,13 @@
   }
 }
 
+svg {
+    width: 95%;
+    height: auto;
+    padding: 0 2.5%;
+}
+
+
 @media only screen and (max-width: 768px) {
   table {
     padding-right: 0.5em;
@@ -124,5 +131,14 @@ section {
   /* We cannot add page numbering to the ToC, so it is not useful when printed.*/
   .table-of-contents {
       display: none;
+  }
+
+  svg {
+    max-height: 40vw;
+  }
+
+  /* Hide fill under graph line when printing. */
+  g[clip-path="url(#clip1)"] {
+    display: none;
   }
 }
