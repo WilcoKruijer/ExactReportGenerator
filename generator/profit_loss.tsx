@@ -3,11 +3,8 @@
 import type {
   AccountResult,
   AccountTree,
-  AccountTreeItem,
   AccountTreeItemAccount,
   AccountTreeItemClassification,
-  BudgetScenarioValue,
-  SimplifiedClassification,
 } from "../deps.ts";
 
 import type { YearlyBudgetScenarioValue } from "./types.d.ts";
@@ -62,20 +59,22 @@ export function renderProfitLoss(
   );
 
   if (!accountRows) {
+    // Renders the header using markdown so it can be included in the table of
+    // content.
     return render(
-      <p>
-        <h3>{classification.classification.Description}</h3>
+      <Fragment>
+        ### {classification.classification.Description + "\n"}
         <div class="warning">
           Classification '{classificationId}' does not have children of type
           'account'.
         </div>
-      </p>,
+      </Fragment>,
     );
   }
 
   return render(
-    <section>
-      <h3>{classification.classification.Description}</h3>
+    <Fragment>
+      ### {classification.classification.Description + "\n"}
       <table>
         <thead>
           <tr>
@@ -88,7 +87,7 @@ export function renderProfitLoss(
         </thead>
         {accountRows}
       </table>
-    </section>,
+    </Fragment>,
   );
 }
 

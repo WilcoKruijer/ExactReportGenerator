@@ -70,3 +70,29 @@ tfoot {
 .balance--header {
     margin: 1.25em 0 0.25em 0;
 }
+
+.table-of-contents {
+    & a {
+        text-decoration: none;
+    }
+
+    & a:hover {
+        text-decoration: underline;
+    }
+
+    & ul {
+        padding-inline-start: 20px;
+    }
+
+    & li {
+        margin-top: 0.2em;
+        list-style-type: none;
+    }
+}
+
+@media print { 
+  /* We cannot add page numbering to the ToC, so it is not useful when printed.*/
+  .table-of-contents {
+      display: none;
+  }
+}

@@ -9,6 +9,8 @@ templateEngine: njk,md
 
 # {{ title }}
 
+[[toc]]
+
 ## Introduction 🎉
 
 This is an introduction to the example report. This can be used as a starting
