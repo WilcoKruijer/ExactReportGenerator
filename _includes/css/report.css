@@ -136,4 +136,9 @@ section {
   svg {
     max-height: 40vw;
   }
+
+  svg g[clip-rule="nonzero"] path:not([transform]) {
+    display: none;
+  }
 }
+
