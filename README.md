@@ -76,6 +76,13 @@ data.
   and budget data from G/L accounts within the classification. If a budget file
   is available it will also display that information. Note that budgets are
   matched on the `GLAccount` guid in the file, not by name.
+- `{% transactions "example/transactions_gl1_2018.json", "month" %}` renders a
+  list of transactions as a graph. the "month" parameter can be changed to "day"
+  to aggregate transaction on a per-day basis. A list of files can also be used
+  as seen in the following example.
+- `{% transactions ["example/transactions_gl1_2018.json", "example/transactions_gl1_2017.json"] , "day" %}`
+  This will overlap multiple data sets in one diagram. Note that the first
+  element of the list should be the most recent year.
 - `[[toc]]` adds a table of contents based on the headers in the document.
 
 The last `options` argument should always be present to indicate to Lume what

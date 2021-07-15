@@ -8,6 +8,7 @@ import {
   aggregateTransactions,
   dailyAggregator,
   monthlyAggregator,
+  sortTransactions,
 } from "./transactions.ts";
 import type { DateAggregator } from "./transactions.ts";
 
@@ -26,10 +27,10 @@ function getMonthList(firstDate: Date, lastDate: Date) {
 }
 
 export async function renderAggregatedTransactionGraph(
-  transactions: TransactionLine[],
+  transactions: TransactionLine[][],
   aggregation: DateAggregator = "day",
 ) {
-  if (!transactions.length) {
+  if (!transactions.length || transactions.some((ts) => !ts.length)) {
     return render(
       <div class="warning">
         Zero transactions found in list.
@@ -41,32 +42,40 @@ export async function renderAggregatedTransactionGraph(
     ? dailyAggregator
     : monthlyAggregator;
 
-  const aggregated = aggregateTransactions(transactions, aggregator);
+  const aggregated = transactions.map((ts, idx) =>
+    aggregateTransactions(ts, aggregator, idx)
+  );
+
+  // Flatten and sort so we can find first and last dates.
+  const flattend = aggregated.flat().sort((t1, t2) =>
+    t1.date.getTime() - t2.date.getTime()
+  );
 
   const monthList = getMonthList(
-    aggregated[0].date,
-    aggregated[aggregated.length - 1].date,
+    flattend[0].date,
+    flattend[flattend.length - 1].date,
   );
 
   const qc = new QuickChart<"line">({
     type: "line",
     data: {
       labels: monthList,
-
-      datasets: [{
-        data: aggregated.map((d) => ({
+      // @ts-ignore wrong types.
+      datasets: aggregated.map((agg, idx) => ({
+        label: transactions[idx][0].FinancialYear,
+        data: agg.map((d) => ({
           x: d.date.getTime(),
           y: d.cumulativeAmount,
         })),
         pointRadius: 0,
-      }],
+      })),
     },
     options: {
       title: {
         display: true,
-        text: transactions[0].GLAccountDescription,
+        text: transactions[0][0].GLAccountDescription,
       },
-      legend: false,
+      legend: aggregated.length > 1 ? undefined : false,
       scales: {
         // @ts-ignore Types seem invalid.
         xAxes: [{

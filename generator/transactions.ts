@@ -23,18 +23,21 @@ export interface AggregatedTransaction {
   date: Date;
 }
 
+export function sortTransactions(transactions: TransactionLine[]) {
+  return transactions.sort((t1, t2) =>
+    new Date(t1.Date).getTime() - new Date(t2.Date).getTime()
+  );
+}
+
 export function aggregateTransactions(
   transactions: TransactionLine[],
   aggregator = dailyAggregator,
+  yearOffset: number | undefined = undefined,
 ): AggregatedTransaction[] {
   if (!transactions.length) {
     return [];
   }
-
-  // Sort the transactions by its dates
-  transactions = transactions.sort((t1, t2) =>
-    new Date(t1.Date).getTime() - new Date(t2.Date).getTime()
-  );
+  transactions = sortTransactions(transactions);
 
   // Get the sum of all transactions besides the very last one.
   const initialTransactions = init(transactions);
@@ -55,8 +58,14 @@ export function aggregateTransactions(
   const aggregated: Omit<AggregatedTransaction, "cumulativeAmount">[] = Object
     .entries(grouped).map((entry) => {
       const [dateString, dailyTransactions] = entry;
+      const d = new Date(dateString);
+
+      if (yearOffset) {
+        d.setUTCFullYear(d.getUTCFullYear() + yearOffset);
+      }
+
       return {
-        date: new Date(dateString),
+        date: d,
         amount: -1 * dailyTransactions.reduce((acc, t) => acc + t.AmountDC, 0),
       };
     });

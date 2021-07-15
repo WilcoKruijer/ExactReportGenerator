@@ -28,31 +28,39 @@ export interface HelperOptions {
 }
 
 function registerHelpers(site: Site): void {
-  site.helper("classification", async (classification, options) => {
-    validateClassificationId(classification);
+  site.helper(
+    "classification",
+    async (classification: unknown, options: unknown) => {
+      validateClassificationId(classification);
 
-    if (!isHelperOptions(options)) {
-      throw new TypeError("Invalid option object given.");
-    }
+      if (!isHelperOptions(options)) {
+        throw new TypeError("Invalid option object given.");
+      }
 
-    const report = await getDataFile<AccountTree>(site, options.report);
-    const budget = options.budget
-      ? await getDataFile<YearlyBudgetScenarioValue[]>(
-        site,
-        options.budget,
-      )
-      : undefined;
+      const report = await getDataFile<AccountTree>(site, options.report);
+      const budget = options.budget
+        ? await getDataFile<YearlyBudgetScenarioValue[]>(
+          site,
+          options.budget,
+        )
+        : undefined;
 
-    return renderProfitLoss(
-      classification,
-      report,
-      budget,
-    );
-  }, { type: "tag", async: true });
+      return renderProfitLoss(
+        classification,
+        report,
+        budget,
+      );
+    },
+    { type: "tag", async: true },
+  );
 
   site.helper(
     "balance",
-    async (classificationLeft, classificationRight, options) => {
+    async (
+      classificationLeft: unknown,
+      classificationRight: unknown,
+      options: unknown,
+    ) => {
       validateClassificationId(classificationLeft);
       validateClassificationId(classificationRight);
 
@@ -73,18 +81,21 @@ function registerHelpers(site: Site): void {
 
   site.helper(
     "transactions",
-    async (transactionFile, dateAggregator = "day") => {
-      if (typeof transactionFile !== "string") {
-        throw new TypeError("Invalid transaction file given.");
+    async (fileOrFiles: unknown, dateAggregator: unknown = "day") => {
+      if (typeof fileOrFiles !== "string" && !isStringArray(fileOrFiles)) {
+        throw new TypeError("Invalid transaction file(s) given.");
       }
+
+      const fileNames = isStringArray(fileOrFiles)
+        ? fileOrFiles
+        : [fileOrFiles];
 
       if (!isDateAggregator(dateAggregator)) {
         throw new TypeError("Invalid dateAggregator given.");
       }
 
-      const transactions = await getDataFile<TransactionLine[]>(
-        site,
-        transactionFile,
+      const transactions = await Promise.all(
+        fileNames.map((f) => getDataFile<TransactionLine[]>(site, f)),
       );
 
       return await renderAggregatedTransactionGraph(
@@ -109,6 +120,14 @@ function isHelperOptions(options: unknown): options is HelperOptions {
     (typeof options.budget === "string" ||
       typeof options.budget === "undefined")
   );
+}
+
+function isStringArray(arr: unknown): arr is Array<string> {
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+
+  return !arr.some((a) => typeof a !== "string");
 }
 
 function validateClassificationId(id: unknown): asserts id is string | number {

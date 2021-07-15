@@ -136,9 +136,4 @@ section {
   svg {
     max-height: 40vw;
   }
-
-  /* Hide fill under graph line when printing. */
-  g[clip-path="url(#clip1)"] {
-    display: none;
-  }
 }

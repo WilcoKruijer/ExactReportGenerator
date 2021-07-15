@@ -41,7 +41,10 @@ Nullam aliquet tincidunt elit quis tempor.
 
 {% classification "Income", options %}
 
-{% transactions "example/transactions_gl1.json", "day" %}
+{% transactions ["example/transactions_gl1_2018.json",
+"example/transactions_gl1_2017.json"] , "day" %}
+
+{% transactions "example/transactions_gl1_2018.json", "month" %}
 
 {% classification "Miscellaneous Costs", options %}
 

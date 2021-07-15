@@ -1,12 +1,12 @@
 // Adapted from https://github.com/typpo/quickchart-js/blob/master/index.js
 
-import type { ChartConfiguration, ChartType } from "../deps.ts";
+import { ChartConfiguration, ChartType, uuidv4 } from "../deps.ts";
 
 const HOST = "https://quickchart.io";
 const DEFAULT_DEVICE_PIXEL_RATIO = 1.0;
 const DEFAULT_BACKGROUND_COLOR = "#ffffff";
 
-const chartCache: Map<string, string> = new Map();
+const chartCache: Map<string, Promise<string>> = new Map();
 
 export default class QuickChart<T extends ChartType> {
   width = 500;
@@ -43,6 +43,21 @@ export default class QuickChart<T extends ChartType> {
     return url;
   }
 
+  /** It is necessary to rename ids because multiple charts can have
+   * overlapping ids which breaks their rendering in browsers.
+   */
+  renameIds(svg: string): string {
+    const idRegex = /id="(clip\d)"/gi;
+
+    const matches = svg.matchAll(idRegex);
+
+    for (const [, id] of matches) {
+      svg = svg.replaceAll(id, id + uuidv4.generate());
+    }
+
+    return svg;
+  }
+
   async getAsText(): Promise<string> {
     const url = this.getUrl();
     const fromCache = chartCache.get(url.href);
@@ -52,10 +67,8 @@ export default class QuickChart<T extends ChartType> {
     }
 
     const res = await fetch(this.getUrl());
-
-    return res.text().then((text) => {
-      chartCache.set(url.href, text);
-      return text;
-    });
+    const textPromise = res.text().then(this.renameIds);
+    chartCache.set(url.href, textPromise);
+    return textPromise;
   }
 }
