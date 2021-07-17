@@ -48,6 +48,15 @@ Nullam aliquet tincidunt elit quis tempor.
 
 {% classification "Miscellaneous Costs", options %}
 
+Tables are also supported, they can be used to show various statistics:
+
+| Product X sold   | **3.443** | X inventory start | **500** |
+| ---------------- | --------- | ----------------- | ------- |
+| Product X bought | **3.300** | X inventory end   | **130** |
+
+This would mean `(3300 + 500 − 130) − 3443 = 227` products were lost or stolen.
+(MathJax or similar is hopefully supported soon.)
+
 This is the **END**.
 
 ##### Thanks for reading !

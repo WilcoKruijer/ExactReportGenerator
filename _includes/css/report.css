@@ -3,6 +3,10 @@
 
   margin: 0.75em 0;
 
+  & th {
+      font-weight: bold;
+  }
+
   & td:not(:first-child),
   & th:not(:first-child) {
     padding: 0 0 0 1em;
@@ -24,6 +28,12 @@
   & tfoot {
       font-weight: 900;
   }
+}
+
+code {
+    background-color: rgba(37, 31, 35, 0.05);
+    padding: .2em .4em;
+    font-size: 0.95rem;
 }
 
 svg {

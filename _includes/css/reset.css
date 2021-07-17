@@ -42,6 +42,10 @@ body {
 table {
   width: 100%;
 
+  & th {
+    font-weight: normal;
+  }
+
   & td, & th {
     vertical-align: baseline;
     text-align: left;
