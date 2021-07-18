@@ -31,13 +31,22 @@ export function sortTransactions(transactions: TransactionLine[]) {
 
 export function aggregateTransactions(
   transactions: TransactionLine[],
-  aggregator = dailyAggregator,
+  aggregator: Selector<TransactionLine, string> | DateAggregator = dailyAggregator,
   yearOffset: number | undefined = undefined,
 ): AggregatedTransaction[] {
   if (!transactions.length) {
     return [];
   }
   transactions = sortTransactions(transactions);
+
+  switch (aggregator) {
+    case "day":
+      aggregator = dailyAggregator;
+      break;
+    case "month":
+      aggregator = monthlyAggregator;
+      break;
+  }
 
   // Get the sum of all transactions besides the very last one.
   const initialTransactions = init(transactions);
@@ -70,14 +79,10 @@ export function aggregateTransactions(
       };
     });
 
-  // Make copy of date
-  const zeroDate = new Date(aggregated[0].date);
-  // Set the date to one day earlier.
-  // zeroDate.setDate(zeroDate.getDate());
 
   // Create a fake 0th empty so the line starts at 0.
   const zeroEntry: AggregatedTransaction = {
-    date: zeroDate,
+    date: new Date(aggregated[0].date),
     amount: 0,
     cumulativeAmount: 0,
   };

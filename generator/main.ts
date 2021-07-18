@@ -1,9 +1,10 @@
 import { AccountTree, extname, TransactionLine } from "../deps.ts";
 import { Site } from "../deps.ts";
+import site from "../_config.ts";
 import { renderBalance } from "./helpers/balance.tsx";
 import { renderProfitLoss } from "./helpers/profit_loss.tsx";
 import { renderAggregatedTransactionGraph } from "./helpers/graphing.tsx";
-import { isDateAggregator } from "./services/transactions.ts";
+import { aggregateTransactions, isDateAggregator } from "./services/transactions.ts";
 import { YearlyBudgetScenarioValue } from "./services/budget.ts";
 
 /** This function is ran when the config is loaded. Can be used to register
@@ -27,82 +28,107 @@ export interface HelperOptions {
   budget?: string;
 }
 
+async function classificationHelper(classification: unknown, options: unknown) {
+  validateClassificationId(classification);
+
+  if (!isHelperOptions(options)) {
+    throw new TypeError("Invalid option object given.");
+  }
+
+  const report = await getDataFile<AccountTree>(options.report);
+  const budget = options.budget
+    ? await getDataFile<YearlyBudgetScenarioValue[]>(
+      options.budget,
+    )
+    : undefined;
+
+  return renderProfitLoss(
+    classification,
+    report,
+    budget,
+  );
+}
+
+async function balanceHelper(classificationLeft: unknown,
+  classificationRight: unknown,
+  options: unknown,) {
+  validateClassificationId(classificationLeft);
+  validateClassificationId(classificationRight);
+
+  if (!isHelperOptions(options)) {
+    throw new TypeError("Invalid option object given.");
+  }
+
+  const report = await getDataFile<AccountTree>(options.report);
+
+  return renderBalance(
+    classificationLeft,
+    classificationRight,
+    report,
+  );
+}
+
+async function transactionsHelper(fileOrFiles: unknown, dateAggregator: unknown = "day") {
+  if (typeof fileOrFiles !== "string" && !isStringArray(fileOrFiles)) {
+    throw new TypeError("Invalid transaction file(s) given.");
+  }
+
+  const fileNames = isStringArray(fileOrFiles)
+    ? fileOrFiles
+    : [fileOrFiles];
+
+  if (!isDateAggregator(dateAggregator)) {
+    throw new TypeError("Invalid dateAggregator given.");
+  }
+
+  const transactions = await Promise.all(
+    fileNames.map((f) => getDataFile<TransactionLine[]>(f)),
+  );
+
+  return await renderAggregatedTransactionGraph(
+    transactions,
+    dateAggregator,
+  );
+}
+
+function loadDataHelper(file: unknown) {
+  if (typeof file !== "string") {
+    throw new TypeError("Invalid data file given.");
+  }
+
+  return getDataFile<unknown>(file);
+}
+
 function registerHelpers(site: Site): void {
+  site.helper("load", loadDataHelper, { type: "filter", async: true });
+
+
+  site.helper("aggregate", (transactions: TransactionLine[], aggregator: unknown = "day") => {
+    // TODO: We should probably verify that the first argument is actually a
+    //       of TransactionLines.
+    if (!isDateAggregator(aggregator)) {
+      throw new TypeError(`Invalid aggregator '${aggregator}'.`);
+    }
+
+    return aggregateTransactions(transactions, aggregator);
+  }, { type: "filter" })
+
+
   site.helper(
     "classification",
-    async (classification: unknown, options: unknown) => {
-      validateClassificationId(classification);
-
-      if (!isHelperOptions(options)) {
-        throw new TypeError("Invalid option object given.");
-      }
-
-      const report = await getDataFile<AccountTree>(site, options.report);
-      const budget = options.budget
-        ? await getDataFile<YearlyBudgetScenarioValue[]>(
-          site,
-          options.budget,
-        )
-        : undefined;
-
-      return renderProfitLoss(
-        classification,
-        report,
-        budget,
-      );
-    },
+    classificationHelper,
     { type: "tag", async: true },
   );
 
   site.helper(
     "balance",
-    async (
-      classificationLeft: unknown,
-      classificationRight: unknown,
-      options: unknown,
-    ) => {
-      validateClassificationId(classificationLeft);
-      validateClassificationId(classificationRight);
-
-      if (!isHelperOptions(options)) {
-        throw new TypeError("Invalid option object given.");
-      }
-
-      const report = await getDataFile<AccountTree>(site, options.report);
-
-      return renderBalance(
-        classificationLeft,
-        classificationRight,
-        report,
-      );
-    },
+    balanceHelper,
     { type: "tag", async: true },
   );
 
   site.helper(
     "transactions",
-    async (fileOrFiles: unknown, dateAggregator: unknown = "day") => {
-      if (typeof fileOrFiles !== "string" && !isStringArray(fileOrFiles)) {
-        throw new TypeError("Invalid transaction file(s) given.");
-      }
-
-      const fileNames = isStringArray(fileOrFiles)
-        ? fileOrFiles
-        : [fileOrFiles];
-
-      if (!isDateAggregator(dateAggregator)) {
-        throw new TypeError("Invalid dateAggregator given.");
-      }
-
-      const transactions = await Promise.all(
-        fileNames.map((f) => getDataFile<TransactionLine[]>(site, f)),
-      );
-
-      return await renderAggregatedTransactionGraph(
-        transactions,
-        dateAggregator,
-      );
-    },
+    transactionsHelper,
     { type: "tag", async: true },
   );
 }
@@ -141,8 +167,7 @@ function validateClassificationId(id: unknown): asserts id is string | number {
 }
 
 async function getDataFile<T>(
-  site: Site,
-  reportPath: string,
+  dataPath: string,
 ): Promise<T> {
   const loader = site.source.data.get(".json");
 
@@ -150,8 +175,8 @@ async function getDataFile<T>(
     throw new Error("Could not get json loader.");
   }
 
-  const ext = extname(reportPath) === ".json" ? "" : ".json";
-  const fileName = `_data/${reportPath}${ext}`;
+  const ext = extname(dataPath) === ".json" ? "" : ".json";
+  const fileName = `_data/${dataPath}${ext}`;
 
   let data;
   try {

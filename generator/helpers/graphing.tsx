@@ -27,7 +27,7 @@ function getMonthList(firstDate: Date, lastDate: Date) {
 
 export async function renderAggregatedTransactionGraph(
   transactions: TransactionLine[][],
-  aggregation: DateAggregator = "day",
+  aggregator: DateAggregator = "day",
 ) {
   if (!transactions.length || transactions.some((ts) => !ts.length)) {
     return render(
@@ -37,10 +37,8 @@ export async function renderAggregatedTransactionGraph(
     );
   }
 
-  const aggregator = aggregation === "day"
-    ? dailyAggregator
-    : monthlyAggregator;
-
+  // FIXME: index is not the right way to shift years. It breaks when there is
+  //        more than one year between two lists of transactions.
   const aggregated = transactions.map((ts, idx) =>
     aggregateTransactions(ts, aggregator, idx)
   );
