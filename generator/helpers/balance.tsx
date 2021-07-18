@@ -1,21 +1,18 @@
 /** @jsx h */
 
 import type {
-  AccountResult,
   AccountTree,
   AccountTreeItem,
-  AccountTreeItemAccount,
   AccountTreeItemClassification,
-  SimplifiedClassification,
   VNode,
-} from "../deps.ts";
-import { Fragment, h, render } from "../deps.ts";
+} from "../../deps.ts";
+import { Fragment, h, render } from "../../deps.ts";
 import {
   getClassificationData,
   removeAccountPrefix,
   renderClassificationIdNotFound,
-} from "./classification.tsx";
-import { formatNumberOptions, locale } from "./constants.ts";
+} from "../services/classification.tsx";
+import { formatNumberOptions, locale } from "../constants.ts";
 
 export function renderBalance(
   classificationIdLeft: string | number,

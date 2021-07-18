@@ -5,18 +5,16 @@ import type {
   AccountTree,
   AccountTreeItemAccount,
   AccountTreeItemClassification,
-} from "../deps.ts";
+} from "../../deps.ts";
 
-import type { YearlyBudgetScenarioValue } from "./types.d.ts";
-
-import { Fragment, h, render } from "../deps.ts";
+import { Fragment, h, render } from "../../deps.ts";
 import {
   getClassificationData,
   removeAccountPrefix,
   renderClassificationIdNotFound,
-} from "./classification.tsx";
-import { formatNumberOptions, locale } from "./constants.ts";
-import { getBudgetForAccount } from "./budget.ts";
+} from "../services/classification.tsx";
+import { formatNumberOptions, locale } from "../constants.ts";
+import { getBudgetForAccount, YearlyBudgetScenarioValue } from "../services//budget.ts";
 
 const defaultOptions: ProfitLossOptions = {
   includeEmpty: true,

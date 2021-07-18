@@ -1,14 +1,11 @@
 /** @jsx h */
 
 import type {
-  AccountResult,
-  AccountTree,
   AccountTreeItem,
-  AccountTreeItemAccount,
   AccountTreeItemClassification,
   SimplifiedClassification,
-} from "../deps.ts";
-import { Fragment, h, render } from "../deps.ts";
+} from "../../deps.ts";
+import { h } from "../../deps.ts";
 
 export function renderClassificationIdNotFound(
   classificationId: string | number,

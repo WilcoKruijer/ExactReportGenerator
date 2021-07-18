@@ -1,10 +1,10 @@
 import { AccountTree, extname, TransactionLine } from "../deps.ts";
 import { Site } from "../deps.ts";
-import { renderBalance } from "./balance.tsx";
-import { renderProfitLoss } from "./profit_loss.tsx";
-import { renderAggregatedTransactionGraph } from "./graphing.tsx";
-import { YearlyBudgetScenarioValue } from "./types.d.ts";
-import { isDateAggregator } from "./transactions.ts";
+import { renderBalance } from "./helpers/balance.tsx";
+import { renderProfitLoss } from "./helpers/profit_loss.tsx";
+import { renderAggregatedTransactionGraph } from "./helpers/graphing.tsx";
+import { isDateAggregator } from "./services/transactions.ts";
+import { YearlyBudgetScenarioValue } from "./services/budget.ts";
 
 /** This function is ran when the config is loaded. Can be used to register
  * custom filters, helpers, etc.

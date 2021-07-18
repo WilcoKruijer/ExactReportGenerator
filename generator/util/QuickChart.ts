@@ -1,6 +1,6 @@
 // Adapted from https://github.com/typpo/quickchart-js/blob/master/index.js
 
-import { ChartConfiguration, ChartType, uuidv4 } from "../deps.ts";
+import { ChartConfiguration, ChartType, uuidv4 } from "../../deps.ts";
 
 const HOST = "https://quickchart.io";
 const DEFAULT_DEVICE_PIXEL_RATIO = 1.0;

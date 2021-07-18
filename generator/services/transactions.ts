@@ -1,6 +1,6 @@
-import type { TransactionLine } from "../deps.ts";
-import { cumulativeSum, groupBy, init } from "./util/collections.ts";
-import type { Selector } from "./util/collections.ts";
+import type { TransactionLine } from "../../deps.ts";
+import { cumulativeSum, groupBy, init } from "../util/collections.ts";
+import type { Selector } from "../util/collections.ts";
 
 export type DateAggregator = "day" | "month";
 
