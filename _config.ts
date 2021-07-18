@@ -4,6 +4,7 @@ import postcss from "lume/plugins/postcss.ts";
 import terser from "lume/plugins/terser.ts";
 import markdown from "lume/plugins/markdown.ts";
 import slugifyUrls from "lume/plugins/slugify_urls.ts";
+import inline from "lume/plugins/inline.ts";
 
 import { main } from "./generator/main.ts";
 import {
@@ -32,7 +33,8 @@ site
         }],
       ],
     }),
-  );
+)
+  .use(inline());
 
 main(site);
 
