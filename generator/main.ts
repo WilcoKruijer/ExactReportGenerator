@@ -10,6 +10,7 @@ import {
   isSimpleTransactionArray,
 } from "./services/transactions.ts";
 import { YearlyBudgetScenarioValue } from "./services/budget.ts";
+import { formatNumberOptions, locale } from "./constants.ts";
 
 /** This function is ran when the config is loaded. Can be used to register
  * custom filters, helpers, etc.
@@ -94,6 +95,7 @@ async function transactionsHelper(
 
   return await renderAggregatedTransactionGraph(
     transactions,
+    transactions[0][0].GLAccountDescription,
     dateAggregator,
   );
 }
@@ -106,24 +108,35 @@ function loadDataHelper(file: unknown) {
   return getDataFile<unknown>(file);
 }
 
+function aggregateHelper(transactions: unknown, aggregator: unknown = "day") {
+  if (!isSimpleTransactionArray(transactions)) {
+    throw new TypeError(
+      "Invalid data in file. Expected an array of transactions.",
+    );
+  }
+  if (!isDateAggregator(aggregator)) {
+    throw new TypeError(`Invalid aggregator '${aggregator}'.`);
+  }
+
+  return aggregateTransactions(transactions, aggregator);
+}
+
 function registerHelpers(site: Site): void {
   site.helper("load", loadDataHelper, { type: "filter", async: true });
 
-  site.helper(
-    "aggregate",
-    (transactions: unknown, aggregator: unknown = "day") => {
-      if (!isSimpleTransactionArray(transactions)) {
-        throw new TypeError(
-          "Invalid data in file. Expected an array of transactions.",
-        );
-      }
-      if (!isDateAggregator(aggregator)) {
-        throw new TypeError(`Invalid aggregator '${aggregator}'.`);
-      }
+  site.filter("euro", (n: unknown) => {
+    if (typeof n === "number") {
+      return `€${
+        n.toLocaleString(locale, formatNumberOptions).replace(",00", ",-")
+      }`;
+    }
 
-      return aggregateTransactions(transactions, aggregator);
-    },
-    { type: "filter" },
+    return "€" + n;
+  });
+
+  site.filter(
+    "aggregate",
+    aggregateHelper,
   );
 
   site.helper(

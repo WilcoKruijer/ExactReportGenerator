@@ -8,6 +8,7 @@ import {
   aggregateTransactions,
   dailyAggregator,
   monthlyAggregator,
+  SimpleTransaction,
 } from "../services/transactions.ts";
 import type { DateAggregator } from "../services/transactions.ts";
 
@@ -26,7 +27,8 @@ function getMonthList(firstDate: Date, lastDate: Date) {
 }
 
 export async function renderAggregatedTransactionGraph(
-  transactions: TransactionLine[][],
+  transactions: SimpleTransaction[][],
+  title: string,
   aggregator: DateAggregator = "day",
 ) {
   if (!transactions.length || transactions.some((ts) => !ts.length)) {
@@ -57,9 +59,9 @@ export async function renderAggregatedTransactionGraph(
     type: "line",
     data: {
       labels: monthList,
-      // @ts-ignore wrong types.
       datasets: aggregated.map((agg, idx) => ({
-        label: transactions[idx][0].FinancialYear,
+        type: "line",
+        label: transactions[idx][0].FinancialYear.toString(),
         data: agg.map((d) => ({
           x: d.date.getTime(),
           y: d.cumulativeAmount,
@@ -70,7 +72,7 @@ export async function renderAggregatedTransactionGraph(
     options: {
       title: {
         display: true,
-        text: transactions[0][0].GLAccountDescription,
+        text: title,
       },
       legend: aggregated.length > 1 ? undefined : false,
       scales: {

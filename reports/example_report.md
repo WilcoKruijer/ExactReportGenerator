@@ -44,7 +44,16 @@ Nullam aliquet tincidunt elit quis tempor.
 {% transactions ["example/transactions_gl1_2018.json",
 "example/transactions_gl1_2017.json"] , "day" %}
 
-{% transactions "example/transactions_gl1_2018.json", "month" %}
+{% set total_2017 = "example/transactions_gl1_2017.json" | load |
+aggregate("year") | last %}
+
+{% set total_2018 = "example/transactions_gl1_2018.json" | load |
+aggregate("year") | last %}
+
+As can be seen in the graphs, the total amount this year was {{
+total_2018.amount | euro }} as opposed to {{ total_2017.amount | euro }} in the
+previous year. A difference of {{ (total_2018.amount - total_2017.amount) | euro
+}}!
 
 {% classification "Miscellaneous Costs", options %}
 

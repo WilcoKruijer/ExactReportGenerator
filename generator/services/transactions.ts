@@ -5,7 +5,8 @@ import type { Selector } from "../util/collections.ts";
 export type DateAggregator = "day" | "month";
 
 export function isDateAggregator(val: unknown): val is DateAggregator {
-  return (typeof val === "string" && (val === "day" || val === "month"));
+  return (typeof val === "string" &&
+    (val === "day" || val === "month" || val === "year"));
 }
 
 export const dailyAggregator: Selector<SimpleTransaction, string> = (t) =>
@@ -17,12 +18,24 @@ export const monthlyAggregator: Selector<SimpleTransaction, string> = (t) => {
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}Z`;
 };
 
-export type SimpleTransaction = Pick<TransactionLine, "AmountDC" | "Date">;
+export const yearlyAggregator: Selector<SimpleTransaction, string> = (t) => {
+  const d = new Date(t.Date);
+  return `${d.getUTCFullYear()}Z`;
+};
+
+export type SimpleTransaction = Pick<
+  TransactionLine,
+  "AmountDC" | "Date" | "FinancialYear"
+>;
 
 export interface AggregatedTransaction {
   amount: number;
-  cumulativeAmount: number;
   date: Date;
+  cumulativeAmount?: number;
+}
+
+export interface CumulativeTransaction extends AggregatedTransaction {
+  cumulativeAmount: number;
 }
 
 export function isSimpleTransaction(t: unknown): t is SimpleTransaction {
@@ -60,7 +73,7 @@ export function aggregateTransactions(
   aggregator: Selector<SimpleTransaction, string> | DateAggregator =
     dailyAggregator,
   yearOffset: number | undefined = undefined,
-): AggregatedTransaction[] {
+): CumulativeTransaction[] {
   if (!transactions.length) {
     return [];
   }
@@ -72,6 +85,9 @@ export function aggregateTransactions(
       break;
     case "month":
       aggregator = monthlyAggregator;
+      break;
+    case "year":
+      aggregator = yearlyAggregator;
       break;
   }
 
@@ -91,7 +107,8 @@ export function aggregateTransactions(
     aggregator,
   );
 
-  const aggregated: Omit<AggregatedTransaction, "cumulativeAmount">[] = Object
+  // Sums all groups
+  const aggregated: AggregatedTransaction[] = Object
     .entries(grouped).map((entry) => {
       const [dateString, dailyTransactions] = entry;
       const d = new Date(dateString);
@@ -107,7 +124,7 @@ export function aggregateTransactions(
     });
 
   // Create a fake 0th empty so the line starts at 0.
-  const zeroEntry: AggregatedTransaction = {
+  const zeroEntry: CumulativeTransaction = {
     date: new Date(aggregated[0].date),
     amount: 0,
     cumulativeAmount: 0,
