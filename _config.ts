@@ -17,6 +17,7 @@ const site = lume();
 site
   .ignore("README.md", "deps.ts", "import_map.json")
   .copy("static", ".")
+  .copy("favicon.ico", "favicon.ico")
   .use(postcss())
   .use(terser())
   .use(date())
