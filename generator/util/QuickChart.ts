@@ -2,6 +2,19 @@
 
 import { ChartConfiguration, ChartType, uuidv4 } from "../../deps.ts";
 
+// From https://stackoverflow.com/a/64776616
+type First<T extends unknown[]> = T extends [infer U, ...unknown[]] ? U : never;
+type Rest<T extends unknown[]> = T extends [unknown, ...infer U] ? U : never;
+
+export type Drill<T, Path extends unknown[]> = First<Path> extends never ? T
+  : First<Path> extends keyof T ? Drill<T[First<Path>], Rest<Path>>
+  : never;
+
+export type GenericDataset<T extends ChartType> = Drill<
+  ChartConfiguration<T>,
+  ["data", "datasets"]
+>;
+
 const HOST = "https://quickchart.io";
 const DEFAULT_DEVICE_PIXEL_RATIO = 1.0;
 const DEFAULT_BACKGROUND_COLOR = "#ffffff";
@@ -16,7 +29,7 @@ export default class QuickChart<T extends ChartType> {
   format: "svg" | "png" = "svg";
 
   constructor(
-    protected config: ChartConfiguration<T>,
+    public config: ChartConfiguration<T>,
     protected apiKey?: string,
     protected accountId?: string,
   ) {

@@ -123,24 +123,12 @@ export function aggregateTransactions(
       };
     });
 
-  // Create a fake 0th empty so the line starts at 0.
-  const zeroEntry: CumulativeTransaction = {
-    date: new Date(aggregated[0].date),
-    amount: 0,
-    cumulativeAmount: 0,
-  };
-
-  return [
-    // Add the zero entry
-    zeroEntry,
-    // Get cumulative list and combine it with the aggregated list
-    ...cumulativeSum(aggregated.map((a) => a.amount)).map(
-      (cumSum, idx) => {
-        return {
-          ...aggregated[idx],
-          cumulativeAmount: cumSum,
-        };
-      },
-    ),
-  ];
+  return cumulativeSum(aggregated.map((a) => a.amount)).map(
+    (cumSum, idx) => {
+      return {
+        ...aggregated[idx],
+        cumulativeAmount: cumSum,
+      };
+    },
+  );
 }

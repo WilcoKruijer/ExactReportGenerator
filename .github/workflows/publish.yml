@@ -19,7 +19,7 @@ jobs:
 
       - name: Run lume
         run: |
-          deno run -A https://deno.land/x/lume@v0.25.2/ci.ts
+          deno run -A https://deno.land/x/lume@v0.25.3/ci.ts
           
       - name: Publish to Vercel
         uses: amondnet/vercel-action@v20

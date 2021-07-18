@@ -68,22 +68,62 @@ created using Markdown [syntax](https://markdown-it.github.io/). Then there are
 a number of important macros that are used to actually create the tables with
 data.
 
-- `{% balance "Assets", "Liabilities", options %}` renders the balance as
-  available in your report data file. `Assets` is the name of the G/L account
-  classification that represents the left side of the balance, while
-  `Liabilities` is the name of the right side of the balance.
-- `{% classification "General Costs", options %}` renders a table with result
-  and budget data from G/L accounts within the classification. If a budget file
-  is available it will also display that information. Note that budgets are
-  matched on the `GLAccount` guid in the file, not by name.
-- `{% transactions "example/transactions_gl1_2018.json", "month" %}` renders a
-  list of transactions as a graph. the "month" parameter can be changed to "day"
-  to aggregate transaction on a per-day basis. A list of files can also be used
-  as seen in the following example.
-- `{% transactions ["example/transactions_gl1_2018.json", "example/transactions_gl1_2017.json"] , "day" %}`
-  This will overlap multiple data sets in one diagram. Note that the first
-  element of the list should be the most recent year.
-- `[[toc]]` adds a table of contents based on the headers in the document.
+### Table of Contents
+
+Adding `[[toc]]` to your report will render a table of contents based on the
+headers in the document.
+
+### Rendering Balance
+
+`{% balance "Assets", "Liabilities", options %}` renders the balance as
+available in your report data file. In this case, `Assets` is the name of the
+G/L account classification that represents the left side of the balance, while
+`Liabilities` is the name of the right side of the balance.
 
 The last `options` argument should always be present to indicate to Lume what
 data files are in use.
+
+### Rendering Tables
+
+`{% classification "General Costs", options %}` renders a table with result and
+budget data from G/L accounts within the classification. If a budget file is
+available it will also display that information. Note that budgets are matched
+on the `GLAccount` guid in the file, not by name.
+
+### Working with Transactions
+
+There are several useful utilities to work with transactions. Transaction files
+can be loaded using the `load`, filter:
+`{{"example/transactions_gl1_2018.json" | load }}`. After loading transactions
+they can be modified using the `aggregate` filter. This filter can aggregate
+transactions by "day", "month", or "year". Using Nunjuck's built-in filter
+`last` we can obtain the total of all transactions in a year.
+
+```njk
+{% set total_2018 = "example/transactions_gl1_2018.json" | load |
+aggregate("year") | last %}
+```
+
+This sets the `total_2018` variable to the result of that ledger account at the
+end of the year. It can now be used in text: `{{ total_2018.amount | euro }}`.
+
+### Graphing Transactions
+
+Line and bar charts are supported by the tool, these are used in conjunction
+with the filters we saw in the previous section. The `bar` or `line` filter will
+transform the transactions to a data set that can be used for charting. The
+`chart` filter then actually creates the start. Do not forget to use the
+built-in `safe` filter, to actually render the html!
+
+```njk
+{{ "example/transactions_gl1_2018.json" | load | aggregate("month") | bar |
+chart("Montly Income in 2018") | safe }}
+```
+
+Multiple lines can also be shown in a single chart:
+
+```njk
+{% set line2017 = "example/transactions_gl1_2017.json" | load | aggregate | line %} 
+{% set line2018 = "example/transactions_gl1_2018.json" | load | aggregate | line %} 
+{{ [line2018, line2017] | chart("Income") | safe }}
+```

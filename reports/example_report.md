@@ -41,8 +41,16 @@ Nullam aliquet tincidunt elit quis tempor.
 
 {% classification "Income", options %}
 
-{% transactions ["example/transactions_gl1_2018.json",
-"example/transactions_gl1_2017.json"] , "day" %}
+Graphs can be inserted to compare revenue year-over-year.
+
+{% set line2017 = "example/transactions_gl1_2017.json" | load | aggregate | line
+%} {% set line2018 = "example/transactions_gl1_2018.json" | load | aggregate |
+line %} {{ [line2018, line2017] | chart("Income") | safe }}
+
+Different aggregation types are possible, such as "day" and "month". Here we
+have a bar-chart that shows the montly income. {{
+"example/transactions_gl1_2018.json" | load | aggregate("month") | bar |
+chart("Montly Income in 2018") | safe }}
 
 {% set total_2017 = "example/transactions_gl1_2017.json" | load |
 aggregate("year") | last %}
@@ -53,7 +61,7 @@ aggregate("year") | last %}
 As can be seen in the graphs, the total amount this year was {{
 total_2018.amount | euro }} as opposed to {{ total_2017.amount | euro }} in the
 previous year. A difference of {{ (total_2018.amount - total_2017.amount) | euro
-}}!
+}}! (These values are automatically calculated.)
 
 {% classification "Miscellaneous Costs", options %}
 

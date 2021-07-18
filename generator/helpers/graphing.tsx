@@ -1,18 +1,26 @@
 /** @jsx h */
 
-import type { TransactionLine } from "../../deps.ts";
+import type {
+  ChartConfiguration,
+  ChartDataset,
+  ChartType,
+  ScatterDataPoint,
+} from "../../deps.ts";
 
-import { Fragment, h, render } from "../../deps.ts";
-import QuickChart from "../util/QuickChart.ts";
+import { h, render } from "../../deps.ts";
+import QuickChart, { Drill, GenericDataset } from "../util/QuickChart.ts";
 import {
   aggregateTransactions,
-  dailyAggregator,
-  monthlyAggregator,
   SimpleTransaction,
 } from "../services/transactions.ts";
 import type { DateAggregator } from "../services/transactions.ts";
 
-function getMonthList(firstDate: Date, lastDate: Date) {
+export interface GraphData<T extends ChartType> {
+  labels: Date[];
+  datasets: GenericDataset<T>;
+}
+
+export function getMonthList(firstDate: Date, lastDate: Date) {
   const firstDayOfMonths: Date[] = [];
 
   for (
@@ -26,59 +34,31 @@ function getMonthList(firstDate: Date, lastDate: Date) {
   return firstDayOfMonths;
 }
 
-export async function renderAggregatedTransactionGraph(
-  transactions: SimpleTransaction[][],
+export async function renderChart<T extends ChartType>(
+  datasets: GenericDataset<T>,
+  labels: unknown[],
   title: string,
-  aggregator: DateAggregator = "day",
 ) {
-  if (!transactions.length || transactions.some((ts) => !ts.length)) {
-    return render(
-      <div class="warning">
-        Zero transactions found in list.
-      </div>,
-    );
-  }
+  const offset = datasets.some((d) => d.type === "bar");
 
-  // FIXME: index is not the right way to shift years. It breaks when there is
-  //        more than one year between two lists of transactions.
-  const aggregated = transactions.map((ts, idx) =>
-    aggregateTransactions(ts, aggregator, idx)
-  );
-
-  // Flatten and sort so we can find first and last dates.
-  const flattend = aggregated.flat().sort((t1, t2) =>
-    t1.date.getTime() - t2.date.getTime()
-  );
-
-  const monthList = getMonthList(
-    flattend[0].date,
-    flattend[flattend.length - 1].date,
-  );
-
-  const qc = new QuickChart<"line">({
+  const qc = new QuickChart<T>({
+    // @ts-ignore Types seem invalid
     type: "line",
     data: {
-      labels: monthList,
-      datasets: aggregated.map((agg, idx) => ({
-        type: "line",
-        label: transactions[idx][0].FinancialYear.toString(),
-        data: agg.map((d) => ({
-          x: d.date.getTime(),
-          y: d.cumulativeAmount,
-        })),
-        pointRadius: 0,
-      })),
+      labels: labels,
+      datasets,
     },
+    // @ts-ignore Types seem invalid
     options: {
       title: {
         display: true,
         text: title,
       },
-      legend: aggregated.length > 1 ? undefined : false,
+      legend: datasets.length > 1 ? undefined : false,
       scales: {
-        // @ts-ignore Types seem invalid.
         xAxes: [{
           type: "time",
+          offset,
           time: {
             unit: "month",
             displayFormats: {

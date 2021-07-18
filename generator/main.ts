@@ -1,11 +1,12 @@
-import { AccountTree, extname, TransactionLine } from "../deps.ts";
+import { AccountTree, ChartType, extname } from "../deps.ts";
 import { Site } from "../deps.ts";
 import site from "../_config.ts";
 import { renderBalance } from "./helpers/balance.tsx";
 import { renderProfitLoss } from "./helpers/profit_loss.tsx";
-import { renderAggregatedTransactionGraph } from "./helpers/graphing.tsx";
+import { getMonthList, GraphData, renderChart } from "./helpers/graphing.tsx";
 import {
   aggregateTransactions,
+  CumulativeTransaction,
   isDateAggregator,
   isSimpleTransactionArray,
 } from "./services/transactions.ts";
@@ -75,31 +76,6 @@ async function balanceHelper(
   );
 }
 
-async function transactionsHelper(
-  fileOrFiles: unknown,
-  dateAggregator: unknown = "day",
-) {
-  if (typeof fileOrFiles !== "string" && !isStringArray(fileOrFiles)) {
-    throw new TypeError("Invalid transaction file(s) given.");
-  }
-
-  const fileNames = isStringArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
-
-  if (!isDateAggregator(dateAggregator)) {
-    throw new TypeError("Invalid dateAggregator given.");
-  }
-
-  const transactions = await Promise.all(
-    fileNames.map((f) => getDataFile<TransactionLine[]>(f)),
-  );
-
-  return await renderAggregatedTransactionGraph(
-    transactions,
-    transactions[0][0].GLAccountDescription,
-    dateAggregator,
-  );
-}
-
 function loadDataHelper(file: unknown) {
   if (typeof file !== "string") {
     throw new TypeError("Invalid data file given.");
@@ -121,7 +97,85 @@ function aggregateHelper(transactions: unknown, aggregator: unknown = "day") {
   return aggregateTransactions(transactions, aggregator);
 }
 
+function lineHelper(transactions: CumulativeTransaction[]): GraphData<"line"> {
+  const labels = getMonthList(
+    transactions[0].date,
+    transactions[transactions.length - 1].date,
+  );
+
+  // Create a fake 0th empty so the line starts at 0.
+  const zeroEntry = {
+    x: transactions[0].date.getTime(),
+    y: 0,
+  };
+
+  return {
+    labels,
+    datasets: [{
+      type: "line",
+      label: transactions[0].date.getFullYear().toString(),
+      data: [
+        zeroEntry,
+        ...transactions.map((d) => ({
+          x: d.date.getTime(),
+          y: d.cumulativeAmount,
+        })),
+      ],
+      pointRadius: 0,
+    }],
+  };
+}
+
+function barHelper(transactions: CumulativeTransaction[]): GraphData<"bar"> {
+  // TODO: fill in empty months
+  // TODO: fix multiple bar dataset in one chart.
+  return {
+    labels: transactions.map((t) => t.date),
+    datasets: [{
+      type: "bar",
+      label: transactions[0].date.getFullYear().toString(),
+      data: transactions.map((d) => d.amount),
+    }],
+  };
+}
+
+function chartHelper<T extends ChartType>(
+  data: GraphData<T> | GraphData<T>[],
+  title = "Graph",
+) {
+  if (!Array.isArray(data)) {
+    data = [data];
+  }
+
+  let mostLabels = data[0].labels;
+  for (const d of data) {
+    if (d.labels.length > mostLabels.length) {
+      mostLabels = d.labels;
+    }
+  }
+
+  const originalYear = mostLabels[0].getFullYear();
+
+  // Adjusts the year so the graphs overlap eachother.
+  for (const secondaryData of data) {
+    for (const dataset of secondaryData.datasets) {
+      for (const dataPoint of dataset.data) {
+        if (dataPoint && typeof dataPoint === "object" && "x" in dataPoint) {
+          dataPoint.x = new Date(dataPoint.x).setFullYear(originalYear);
+        }
+      }
+    }
+  }
+
+  return renderChart(
+    data.flatMap((d) => d.datasets),
+    mostLabels,
+    title,
+  );
+}
+
 function registerHelpers(site: Site): void {
+  // @ts-ignore helper types will be relaxed in the next version of Lume, we can remove this then,
   site.helper("load", loadDataHelper, { type: "filter", async: true });
 
   site.filter("euro", (n: unknown) => {
@@ -135,7 +189,28 @@ function registerHelpers(site: Site): void {
   });
 
   site.filter(
+    "line",
+    // @ts-ignore helper types will be relaxed in the next version of Lume, we can remove this then.
+    lineHelper,
+  );
+
+  site.helper(
+    "chart",
+    // @ts-ignore FIXME: generic type of helper function is not setup properly.
+    chartHelper,
+    { type: "filter", async: true },
+  );
+
+  site.helper(
+    "bar",
+    // @ts-ignore idem.
+    barHelper,
+    { type: "filter", async: true },
+  );
+
+  site.filter(
     "aggregate",
+    // @ts-ignore helper types will be relaxed in the next version of Lume, we can remove this then.
     aggregateHelper,
   );
 
@@ -148,12 +223,6 @@ function registerHelpers(site: Site): void {
   site.helper(
     "balance",
     balanceHelper,
-    { type: "tag", async: true },
-  );
-
-  site.helper(
-    "transactions",
-    transactionsHelper,
     { type: "tag", async: true },
   );
 }
@@ -171,14 +240,6 @@ function isHelperOptions(options: unknown): options is HelperOptions {
     (typeof options.budget === "string" ||
       typeof options.budget === "undefined")
   );
-}
-
-function isStringArray(arr: unknown): arr is Array<string> {
-  if (!Array.isArray(arr)) {
-    return false;
-  }
-
-  return !arr.some((a) => typeof a !== "string");
 }
 
 function validateClassificationId(id: unknown): asserts id is string | number {
