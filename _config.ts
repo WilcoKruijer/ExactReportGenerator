@@ -33,7 +33,7 @@ site
         }],
       ],
     }),
-)
+  )
   .use(inline());
 
 main(site);

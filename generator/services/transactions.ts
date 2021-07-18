@@ -8,14 +8,16 @@ export function isDateAggregator(val: unknown): val is DateAggregator {
   return (typeof val === "string" && (val === "day" || val === "month"));
 }
 
-export const dailyAggregator: Selector<TransactionLine, string> = (t) =>
+export const dailyAggregator: Selector<SimpleTransaction, string> = (t) =>
   new Date(t.Date).toDateString();
 
-export const monthlyAggregator: Selector<TransactionLine, string> = (t) => {
+export const monthlyAggregator: Selector<SimpleTransaction, string> = (t) => {
   const d = new Date(t.Date);
   // + 1 because months are 0-indexed. Z to ignore timezones.
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}Z`;
 };
+
+export type SimpleTransaction = Pick<TransactionLine, "AmountDC" | "Date">;
 
 export interface AggregatedTransaction {
   amount: number;
@@ -23,15 +25,40 @@ export interface AggregatedTransaction {
   date: Date;
 }
 
-export function sortTransactions(transactions: TransactionLine[]) {
+export function isSimpleTransaction(t: unknown): t is SimpleTransaction {
+  function isPartialSimpleTransaction(
+    options: unknown,
+  ): options is Partial<Record<keyof SimpleTransaction, unknown>> {
+    return typeof options === "object" && options !== null;
+  }
+
+  return (
+    isPartialSimpleTransaction(t) &&
+    typeof t.AmountDC === "number" &&
+    typeof t.Date === "string"
+  );
+}
+
+export function isSimpleTransactionArray(
+  arr: unknown,
+): arr is Array<SimpleTransaction> {
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+
+  return !arr.some((a) => !isSimpleTransaction(a));
+}
+
+export function sortTransactions(transactions: SimpleTransaction[]) {
   return transactions.sort((t1, t2) =>
     new Date(t1.Date).getTime() - new Date(t2.Date).getTime()
   );
 }
 
 export function aggregateTransactions(
-  transactions: TransactionLine[],
-  aggregator: Selector<TransactionLine, string> | DateAggregator = dailyAggregator,
+  transactions: SimpleTransaction[],
+  aggregator: Selector<SimpleTransaction, string> | DateAggregator =
+    dailyAggregator,
   yearOffset: number | undefined = undefined,
 ): AggregatedTransaction[] {
   if (!transactions.length) {
@@ -78,7 +105,6 @@ export function aggregateTransactions(
         amount: -1 * dailyTransactions.reduce((acc, t) => acc + t.AmountDC, 0),
       };
     });
-
 
   // Create a fake 0th empty so the line starts at 0.
   const zeroEntry: AggregatedTransaction = {

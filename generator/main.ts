@@ -4,7 +4,11 @@ import site from "../_config.ts";
 import { renderBalance } from "./helpers/balance.tsx";
 import { renderProfitLoss } from "./helpers/profit_loss.tsx";
 import { renderAggregatedTransactionGraph } from "./helpers/graphing.tsx";
-import { aggregateTransactions, isDateAggregator } from "./services/transactions.ts";
+import {
+  aggregateTransactions,
+  isDateAggregator,
+  isSimpleTransactionArray,
+} from "./services/transactions.ts";
 import { YearlyBudgetScenarioValue } from "./services/budget.ts";
 
 /** This function is ran when the config is loaded. Can be used to register
@@ -49,9 +53,11 @@ async function classificationHelper(classification: unknown, options: unknown) {
   );
 }
 
-async function balanceHelper(classificationLeft: unknown,
+async function balanceHelper(
+  classificationLeft: unknown,
   classificationRight: unknown,
-  options: unknown,) {
+  options: unknown,
+) {
   validateClassificationId(classificationLeft);
   validateClassificationId(classificationRight);
 
@@ -68,14 +74,15 @@ async function balanceHelper(classificationLeft: unknown,
   );
 }
 
-async function transactionsHelper(fileOrFiles: unknown, dateAggregator: unknown = "day") {
+async function transactionsHelper(
+  fileOrFiles: unknown,
+  dateAggregator: unknown = "day",
+) {
   if (typeof fileOrFiles !== "string" && !isStringArray(fileOrFiles)) {
     throw new TypeError("Invalid transaction file(s) given.");
   }
 
-  const fileNames = isStringArray(fileOrFiles)
-    ? fileOrFiles
-    : [fileOrFiles];
+  const fileNames = isStringArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
   if (!isDateAggregator(dateAggregator)) {
     throw new TypeError("Invalid dateAggregator given.");
@@ -102,17 +109,22 @@ function loadDataHelper(file: unknown) {
 function registerHelpers(site: Site): void {
   site.helper("load", loadDataHelper, { type: "filter", async: true });
 
+  site.helper(
+    "aggregate",
+    (transactions: unknown, aggregator: unknown = "day") => {
+      if (!isSimpleTransactionArray(transactions)) {
+        throw new TypeError(
+          "Invalid data in file. Expected an array of transactions.",
+        );
+      }
+      if (!isDateAggregator(aggregator)) {
+        throw new TypeError(`Invalid aggregator '${aggregator}'.`);
+      }
 
-  site.helper("aggregate", (transactions: TransactionLine[], aggregator: unknown = "day") => {
-    // TODO: We should probably verify that the first argument is actually a
-    //       of TransactionLines.
-    if (!isDateAggregator(aggregator)) {
-      throw new TypeError(`Invalid aggregator '${aggregator}'.`);
-    }
-
-    return aggregateTransactions(transactions, aggregator);
-  }, { type: "filter" })
-
+      return aggregateTransactions(transactions, aggregator);
+    },
+    { type: "filter" },
+  );
 
   site.helper(
     "classification",

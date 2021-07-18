@@ -5,7 +5,6 @@ export type YearlyBudgetScenarioValue = Omit<
   "ReportingPeriod"
 >;
 
-
 export function getBudgetForAccount(
   accountGuid: string,
   budgetValues: YearlyBudgetScenarioValue[],

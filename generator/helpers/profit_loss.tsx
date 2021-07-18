@@ -14,7 +14,10 @@ import {
   renderClassificationIdNotFound,
 } from "../services/classification.tsx";
 import { formatNumberOptions, locale } from "../constants.ts";
-import { getBudgetForAccount, YearlyBudgetScenarioValue } from "../services//budget.ts";
+import {
+  getBudgetForAccount,
+  YearlyBudgetScenarioValue,
+} from "../services//budget.ts";
 
 const defaultOptions: ProfitLossOptions = {
   includeEmpty: true,
