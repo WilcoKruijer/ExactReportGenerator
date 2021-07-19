@@ -1,19 +1,10 @@
 /** @jsx h */
 
-import type {
-  ChartConfiguration,
-  ChartDataset,
-  ChartType,
-  ScatterDataPoint,
-} from "../../deps.ts";
+import type { ChartType } from "../../deps.ts";
 
 import { h, render } from "../../deps.ts";
-import QuickChart, { Drill, GenericDataset } from "../util/QuickChart.ts";
-import {
-  aggregateTransactions,
-  SimpleTransaction,
-} from "../services/transactions.ts";
-import type { DateAggregator } from "../services/transactions.ts";
+import QuickChart, { GenericDataset } from "../util/QuickChart.ts";
+import { writeDebugFile } from "./helper_util.ts";
 
 export interface GraphData<T extends ChartType> {
   labels: Date[];
@@ -73,6 +64,8 @@ export async function renderChart<T extends ChartType>(
       },
     },
   });
+
+  writeDebugFile(`chart_${title}.json`, qc.config);
 
   const svgData = await qc.getAsText();
 

@@ -3,6 +3,9 @@ import {
   isDateAggregator,
   isSimpleTransactionArray,
 } from "../services/transactions.ts";
+import { writeDebugFile } from "./helper_util.ts";
+
+let debugFileIndex = 0;
 
 export function aggregateHelper(
   transactions: unknown,
@@ -17,5 +20,9 @@ export function aggregateHelper(
     throw new TypeError(`Invalid aggregator '${aggregator}'.`);
   }
 
-  return aggregateTransactions(transactions, aggregator);
+  const result = aggregateTransactions(transactions, aggregator);
+
+  writeDebugFile(`aggregate_${aggregator}_${debugFileIndex++}`, result);
+
+  return result;
 }

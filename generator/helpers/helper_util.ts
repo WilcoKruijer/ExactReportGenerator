@@ -1,5 +1,6 @@
-import { extname } from "../../deps.ts";
+import { dirname, ensureDirSync, extname, join, sep } from "../../deps.ts";
 import site from "../../_config.ts";
+import { DEBUG } from "../main.ts";
 
 export interface HelperOptions {
   /** Path to json report file */
@@ -59,4 +60,42 @@ export async function getDataFile<T>(
   }
 
   return data;
+}
+
+export function writeDebugFile(
+  fileName: string,
+  data: unknown,
+  format = true,
+) {
+  if (!DEBUG) {
+    return;
+  }
+
+  if (!fileName) {
+    throw new TypeError("Empty fileName given.");
+  }
+
+  if (fileName.split(sep)[0] !== "_debug") {
+    fileName = join("_debug", fileName);
+  }
+
+  ensureDirSync(dirname(fileName));
+
+  if (extname(fileName) !== ".json") {
+    fileName += ".json";
+  }
+
+  // Remove all spaces
+  fileName = fileName.replace(/\s/g, "_");
+
+  const encoder = new TextEncoder();
+  const encodedData = encoder.encode(
+    JSON.stringify(data, null, format ? 2 : undefined),
+  );
+
+  Deno.writeFileSync(fileName, encodedData);
+
+  console.debug(
+    `[DEBUG] Written file to: '${fileName}'`,
+  );
 }

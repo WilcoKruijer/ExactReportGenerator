@@ -19,7 +19,13 @@ export { render } from "https://x.lcas.dev/preact@10.5.12/ssr.js";
 
 export { default as Site } from "lume/core/site.ts";
 
-export { extname } from "https://deno.land/std@0.101.0/path/mod.ts";
+export { ensureDirSync } from "https://deno.land/std@0.101.0/fs/mod.ts";
+export {
+  dirname,
+  extname,
+  join,
+  sep,
+} from "https://deno.land/std@0.101.0/path/mod.ts";
 export { v4 as uuidv4 } from "https://deno.land/std@0.101.0/uuid/mod.ts";
 
 export { default as markdownItAnchor } from "https://cdn.skypack.dev/markdown-it-anchor@8.1.0?dts";

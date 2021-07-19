@@ -7,3 +7,4 @@ _data/**
 reports/**
 !reports/example_report.md
 .vercel
+_debug

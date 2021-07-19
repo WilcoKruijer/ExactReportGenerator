@@ -9,8 +9,10 @@ export function isDateAggregator(val: unknown): val is DateAggregator {
     (val === "day" || val === "month" || val === "year"));
 }
 
-export const dailyAggregator: Selector<SimpleTransaction, string> = (t) =>
-  new Date(t.Date).toDateString();
+export const dailyAggregator: Selector<SimpleTransaction, string> = (t) => {
+  const d = new Date(t.Date);
+  return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}Z`;
+};
 
 export const monthlyAggregator: Selector<SimpleTransaction, string> = (t) => {
   const d = new Date(t.Date);
