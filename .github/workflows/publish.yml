@@ -14,8 +14,8 @@ jobs:
       - name: Setup Deno environment
         uses: denoland/setup-deno@v1
         with:
-          # Set to v1.11 since Lume uses --unstable
-          deno-version: v1.11.x
+          # Set to exact version as Lume uses --unstable
+          deno-version: v1.12.x
 
       - name: Run lume
         run: |
