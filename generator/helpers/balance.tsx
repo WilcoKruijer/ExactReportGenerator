@@ -13,6 +13,32 @@ import {
   renderClassificationIdNotFound,
 } from "../services/classification.tsx";
 import { formatNumberOptions, locale } from "../constants.ts";
+import {
+  getDataFile,
+  isHelperOptions,
+  validateClassificationId,
+} from "./helper_util.ts";
+
+export async function balanceHelper(
+  classificationLeft: unknown,
+  classificationRight: unknown,
+  options: unknown,
+) {
+  validateClassificationId(classificationLeft);
+  validateClassificationId(classificationRight);
+
+  if (!isHelperOptions(options)) {
+    throw new TypeError("Invalid option object given.");
+  }
+
+  const report = await getDataFile<AccountTree>(options.report);
+
+  return renderBalance(
+    classificationLeft,
+    classificationRight,
+    report,
+  );
+}
 
 export function renderBalance(
   classificationIdLeft: string | number,
